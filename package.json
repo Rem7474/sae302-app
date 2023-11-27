@@ -2,7 +2,7 @@
   "name": "fr.remcorp.sae302.appbde",
   "displayName": "AppBDE",
   "version": "1.0.0",
-  "description": "A sample Apache Cordova application that responds to the deviceready event.",
+  "description": "Une application pour gérer les stock de conso au bde R&T",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -10,7 +10,7 @@
   "keywords": [
     "ecosystem:cordova"
   ],
-  "author": "Apache Cordova Team",
+  "author": "Rémy Cuvelier",
   "license": "Apache-2.0",
   "devDependencies": {
     "cordova-android": "^12.0.1"

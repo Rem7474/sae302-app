@@ -2,8 +2,8 @@
 <widget id="fr.remcorp.sae302.appBDE" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>AppBDE</name>
     <description>Sample Apache Cordova App</description>
-    <author email="dev@cordova.apache.org" href="https://cordova.apache.org">
-        Apache Cordova Team
+    <author email="remy.cuvelier@outlook.com" href="https://remcorp.fr">
+        Rémy Cuvelier
     </author>
     <content src="index.html" />
     <allow-intent href="http://*/*" />
