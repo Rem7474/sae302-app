@@ -10,7 +10,7 @@
     <allow-intent href="https://*/*" />
     <icon src="www/img/logo_bdesite.png" />
     <platform name="android">
-        <splash src="www/img/logo_bdesite.png"/>
+    	<preference name="AndroidWindowSplashScreenAnimatedIcon" value="www/img/logo_bdesite.png" />
     </platform>
 
 </widget>
