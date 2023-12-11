@@ -12,5 +12,4 @@
     <platform name="android">
     	<preference name="AndroidWindowSplashScreenAnimatedIcon" value="www/img/logo_bdesite.png" />
     </platform>
-
 </widget>

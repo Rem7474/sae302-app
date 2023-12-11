@@ -58,17 +58,14 @@ body {
     width: 100%;
     text-align: center;
 }
-#barre_navigation ul li a{
+#barre_navigation ul li i{
     color: #fff;
     text-decoration: none;
     font-size: 18px;
     font-weight: 500;
     transition: all 0.3s ease;
 }
-#barre_navigation ul li a:hover{
-    color: #4B946A;
-}
-#barre_navigation ul li a i{
+#barre_navigation ul li i{
     font-size: 25px;
     display: block;
 }
