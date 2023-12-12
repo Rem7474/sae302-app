@@ -71,20 +71,20 @@ function Ajout_panier(code_barre){
   let prix = 0;
   let nom = "";
   let quantite = 1;
-  let infos = API_infos_Article(code_barre);
-  console.log(infos);
-  console.log(JSON.stringify(infos));
-  console.log("bouh");
-
+  API_infos_Article(code_barre)
+    .then(data => {
+      let infos = JSON.parse(data);
+      console.log(JSON.stringify(infos));
+      console.log("bouh");
+      //TOUT METTRE ICI car ASYNCHRONE
+    })
+    .catch(error => {
+        //ERROR réseau
+    });
 }
 function API_infos_Article(barcode){
-  console.log("API_infos_Article");
-  console.log(barcode);
-// REQUETE AJAX
-let url = "https://api.sae302.remcorp.fr/sae302-api/getProduct.php?barcode=" + barcode;
-console.log(url);
-
-fetch(url)
+let url = "https://api.sae302.remcorp.fr/sae302-api/getProduct.php?barcode="+barcode;
+return fetch(url)
     .then(response => {
         if (!response.ok) {
             throw new Error('Network response was not ok');
@@ -92,14 +92,9 @@ fetch(url)
         return response.json();
     })
     .then(data => {
-        console.log(data);
-        return data;
+        return JSON.stringify(data);
     })
     .catch(error => {
-        console.error('There has been a problem with your fetch operation:', error);
+        throw error;
     });
 }
-/*<?php
-header("Access-Control-Allow-Origin: *");
-?>*/
-A AJOUTER A L4API

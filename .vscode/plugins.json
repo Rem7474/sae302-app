@@ -1,1 +1,1 @@
-{"plugins":["cordova-plugin-qrscanner","community-cordova-plugin-nfc"]}
+{"plugins":["community-cordova-plugin-nfc","cordova-plugin-compat","cordova-plugin-codescanner"]}
