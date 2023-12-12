@@ -6,7 +6,10 @@
 
 document.addEventListener('deviceready', onDeviceReady, false);
 console.log("Chargement de l'application");
-
+let buttons = document.getElementsByClassName("main_button");
+for(let i = 0; i < buttons.length; i++){
+  buttons[i].addEventListener("click", addAnimation, false);
+}
 function onDeviceReady() {
 
   console.log('Running cordova-' + cordova.platformId + '@' + cordova.version);
@@ -14,28 +17,59 @@ function onDeviceReady() {
   //EVENTS LISTENERS
   document.getElementById("scan").addEventListener("click", startScan, false);
   document.addEventListener("offline", OffLineError, false);
+  //ajout listener pour déclancher animation boutonq
+
   /*--------------------------------------------------------------------------*/
   //INITIALISATION
   //ETAPE 1 : Vérifier si le NFC est disponible
   nfc.enabled(
     function() {
         console.log("NFC est disponible!");
-        nfc.readerMode(
-          nfc.FLAG_READER_NFC_A | nfc.FLAG_READER_NO_PLATFORM_SOUNDS, 
-          nfcTag => console.log(nfc.bytesToHexString(nfcTag.id)),
-          error => console.log('NFC reader mode failed', error)
-      );
     },
     function() {
         console.log("NFC n'est pas disponible sur cet appareil.");
+        //afficher un message d'erreur
     }
   );
   //ETAPE 2 : vérifier l'état de l'API (si elle est disponible)
 
 }
-
 /*TEST ANIMATION*/
-
+function addAnimation(event){
+  let button = event.currentTarget;
+  button.classList.add("click");
+  setTimeout(function(){
+    button.classList.remove("click");
+  }, 500);
+  let target = event.currentTarget.id;
+  switch(target){
+    case "add_user":
+      //remove display none
+      document.getElementById("form_add_user").style.display = "flex";
+      document.getElementById("form_add_user").classList.add("animation_form");
+      nfc.readerMode(
+        nfc.FLAG_READER_NFC_A | nfc.FLAG_READER_NO_PLATFORM_SOUNDS, 
+        nfcTag => {
+          document.getElementById("card_uid").value = nfc.bytesToHexString(nfcTag.id);
+          document.getElementById("card_uid_label").style.display = "none";
+        },
+        error => console.log('NFC reader mode failed', error)
+    );
+      break;
+    case "add_product":
+      console.log("panier");
+      break;
+    case "view_products":
+      console.log("historique");
+      break;
+    case "view_users":
+      console.log("parametres");
+      break;
+    default:
+      console.log("erreur");
+      break;
+  }
+}
 
 
 

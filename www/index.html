@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta charset="utf-8">
-        <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://cdn.jsdelivr.net data: https://ssl.gstatic.com 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; media-src *; img-src 'self' data: content: remcorp.fr *.remcorp.fr; connect-src 'self' *.remcorp.fr;">
+        <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://cdn.jsdelivr.net data: https://ssl.gstatic.com https://fonts.gstatic.com 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; media-src *; img-src 'self' data: content: remcorp.fr *.remcorp.fr; connect-src 'self' *.remcorp.fr;">
         <meta name="format-detection" content="telephone=no">
         <meta name="msapplication-tap-highlight" content="no">
         <meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
@@ -25,13 +25,17 @@
             <div id="panier">
                 <h1>Panier</h1>
             </div>
-            <div id="user-add">
+            <div id="form_add_user">
                 <div class="mdl-card">
                     <div class="mdl-card__title">
                         <h2 class="mdl-card__title-text">Ajout d'un utilisateur</h2>
                     </div>
                     <div class="mdl-card__supporting-text">
                         <form action="#">
+                            <div class="mdl-textfield mdl-js-textfield">
+                                <input class="mdl-textfield__input" disabled type="text" id="card_uid">
+                                <label class="mdl-textfield__label" for="card_uid" id="card_uid_label">UID :</label>
+                            </div>
                             <div class="mdl-textfield mdl-js-textfield">
                                 <input class="mdl-textfield__input" type="text" id="nom">
                                 <label class="mdl-textfield__label" for="nom">Nom</label>
@@ -41,32 +45,28 @@
                                 <label class="mdl-textfield__label" for="prenom">Prénom</label>
                             </div>
                             <div class="mdl-textfield mdl-js-textfield">
-                                <input class="mdl-textfield__input" type="text" id="mail">
-                                <label class="mdl-textfield__label" for="mail">Mail</label>
-                            </div>
-                            <div class="mdl-textfield mdl-js-textfield">
-                                <input class="mdl-textfield__input" type="text" id="mdp">
-                                <label class="mdl-textfield__label" for="mdp">Mot de passe</label>
-                            </div>
-                            <div class="mdl-textfield mdl-js-textfield">
-                                <input class="mdl-textfield__input" type="text" id="mdp2">
-                                <label class="mdl-textfield__label" for="mdp2">Confirmation du mot de passe</label>
+                                <input class="mdl-textfield__input" type="text" id="nbconso">
+                                <label class="mdl-textfield__label" for="nbconso">Nombre de consos :</label>
                             </div>
                         </form>
-                        <!--Bouton Valider-->
+                        <div class="mdl-card__actions mdl-card--border">
+                            <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
+                              Valider
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
             <div class="card-container">
-                <div class="card"><i class="bi bi-person-fill-add"></i></div>
-                <div class="card"><i class="bi bi-database-fill-add"></i></div>
-                <div class="card"><i class="bi bi-person-vcard-fill"></i></div>
-                <div class="card"><i class="bi bi-database-fill-gear"></i></div>
+                <div class="card main_button" id="add_user"><i class="bi bi-person-fill-add"></i></div>
+                <div class="card main_button" id="add_product"><i class="bi bi-database-fill-add"></i></div>
+                <div class="card main_button" id="view_users"><i class="bi bi-person-vcard-fill"></i></div>
+                <div class="card main_button" id="view_products"><i class="bi bi-database-fill-gear"></i></div>
             </div>
             <!--Barre de navigation-->
             <div id="barre_navigation">
                 <ul>
-                    <li><i id = "scan" class="bi bi-upc-scan"></i></li>
+                    <li id="test1"><i id="scan" class="bi bi-upc-scan"></i><span class="ripple"></span></li>
                     <li><a href="panier.html"><i class="bi bi-cart"></i></a></li>
                     <li><a href="historique.html"><i class="bi bi-archive"></i></a></li>
                 </ul>
