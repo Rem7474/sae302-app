@@ -5,28 +5,48 @@
 //PLUGINS : community-cordova-plugin-nfc, cordova-plugin-codescanner
 
 document.addEventListener('deviceready', onDeviceReady, false);
-//document.getElementById("scan").addEventListener("click", startScan, false);
-console.log("coucou");
-function onDeviceReady() {
-    // Cordova is now initialized. Have fun!
+console.log("Chargement de l'application");
 
-    console.log('Running cordova-' + cordova.platformId + '@' + cordova.version);
-    document.getElementById("scan").addEventListener("click", startScan, false);
-    // Vérifier si le NFC est disponible
-    nfc.enabled(
-      function() {
-          console.log("NFC est disponible!");
-          nfc.readerMode(
-            nfc.FLAG_READER_NFC_A | nfc.FLAG_READER_NO_PLATFORM_SOUNDS, 
-            nfcTag => console.log(nfc.bytesToHexString(nfcTag.id)),
-            error => console.log('NFC reader mode failed', error)
-        );
-      },
-      function() {
-          console.log("NFC n'est pas disponible sur cet appareil.");
-      }
+function onDeviceReady() {
+
+  console.log('Running cordova-' + cordova.platformId + '@' + cordova.version);
+  /*--------------------------------------------------------------------------*/
+  //EVENTS LISTENERS
+  document.getElementById("scan").addEventListener("click", startScan, false);
+  document.addEventListener("offline", OffLineError, false);
+  /*--------------------------------------------------------------------------*/
+  //INITIALISATION
+  //ETAPE 1 : Vérifier si le NFC est disponible
+  nfc.enabled(
+    function() {
+        console.log("NFC est disponible!");
+        nfc.readerMode(
+          nfc.FLAG_READER_NFC_A | nfc.FLAG_READER_NO_PLATFORM_SOUNDS, 
+          nfcTag => console.log(nfc.bytesToHexString(nfcTag.id)),
+          error => console.log('NFC reader mode failed', error)
+      );
+    },
+    function() {
+        console.log("NFC n'est pas disponible sur cet appareil.");
+    }
   );
+  //ETAPE 2 : vérifier l'état de l'API (si elle est disponible)
+
 }
+
+/*TEST ANIMATION*/
+
+
+
+
+//FONCTIONS
+//FONCTION : OffLineError
+//DESCRIPTION : Affiche une erreur lorsque l'appareil est hors ligne
+function OffLineError(){
+  alert("Vous êtes hors ligne");
+
+}
+
 function startScan(){
   console.log("startScan");
 cordova.plugins.barcodeScanner.scan(

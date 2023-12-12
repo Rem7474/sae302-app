@@ -20,7 +20,26 @@ body {
     text-transform:uppercase;
     width:100%;
 }
-
+#logo {
+    background-image: url("../img/logo_bdesite.png");
+    background-repeat: no-repeat;
+    background-size: cover; /* Optionnel : centre l'image */
+    width: 100%;
+    height: 0;
+    padding-bottom: calc(100% / (16 / 16)); /* Ratio de l'image (par exemple, 16:9) */
+    position: relative;
+  }
+  
+  /* Contenu à l'intérieur du conteneur avec position absolue */
+#logo div {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* Ajoutez d'autres styles pour le contenu si nécessaire */
+  }
+  
 /* Portrait layout (default) */
 .app {
    
@@ -57,6 +76,10 @@ body {
 #barre_navigation ul li{
     width: 100%;
     text-align: center;
+}
+#barre_navigation ul li:hover{
+    /**/
+
 }
 #barre_navigation ul li i{
     color: #fff;
@@ -129,3 +152,44 @@ h1 {
 #panier{
     display: none;
 }
+
+.card-container {
+    display: flex;
+    width: 100vw;
+    height: 100vw;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-content: center;
+}
+
+.card-container > *{
+    height: 35vw;
+  background-color: rgba(0,0,0,.2);
+  width: 45vw;
+  border-radius: 20px;
+  margin: 5px;
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  box-shadow: 0px 5px 5px rgba(0,0,0,.5);
+  transition: all .5s ease;
+}
+.card-container > *:hover{
+    background-color: rgba(0,0,0,.4);
+    box-shadow: inset 0px 5px 5px rgba(0,0,0,.5);
+    cursor: pointer;
+    transition: all .5s ease;
+}
+.card-container i{
+    font-size: 25vw;
+    padding-bottom: 15px;
+    color:#f2d3b4;
+
+}
+#user-add{
+    display: none;
+    position: absolute;
+    top: 30vh;
+    width: 100vw;
+}
+/*TEST ANIMATION*/
