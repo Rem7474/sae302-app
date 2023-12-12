@@ -25,7 +25,7 @@
             <div id="panier">
                 <h1>Panier</h1>
             </div>
-            <div id="form_add_user">
+            <div id="form_add_user" class="hidden">
                 <div class="mdl-card">
                     <div class="mdl-card__title">
                         <h2 class="mdl-card__title-text">Ajout d'un utilisateur</h2>
@@ -37,23 +37,24 @@
                                 <label class="mdl-textfield__label" for="card_uid" id="card_uid_label">UID :</label>
                             </div>
                             <div class="mdl-textfield mdl-js-textfield">
-                                <input class="mdl-textfield__input" type="text" id="nom">
-                                <label class="mdl-textfield__label" for="nom">Nom</label>
+                                <input class="mdl-textfield__input" type="text" id="user_name">
+                                <label class="mdl-textfield__label" for="user_name">Nom</label>
                             </div>
                             <div class="mdl-textfield mdl-js-textfield">
-                                <input class="mdl-textfield__input" type="text" id="prenom">
-                                <label class="mdl-textfield__label" for="prenom">Prénom</label>
+                                <input class="mdl-textfield__input" type="text" id="user_firstname">
+                                <label class="mdl-textfield__label" for="user_firstname">Prénom</label>
                             </div>
                             <div class="mdl-textfield mdl-js-textfield">
-                                <input class="mdl-textfield__input" type="text" id="nbconso">
-                                <label class="mdl-textfield__label" for="nbconso">Nombre de consos :</label>
+                                <input class="mdl-textfield__input" type="text" id="user_nbconsos">
+                                <label class="mdl-textfield__label" for="user_nbconsos">Nombre de consos :</label>
+                            </div>
+                            <div class="mdl-card__actions mdl-card--border">
+                                <button type="submit" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" id="send_form_user">
+                                  Valider
+                                </a>
                             </div>
                         </form>
-                        <div class="mdl-card__actions mdl-card--border">
-                            <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
-                              Valider
-                            </a>
-                        </div>
+                        
                     </div>
                 </div>
             </div>

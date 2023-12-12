@@ -44,9 +44,13 @@ function addAnimation(event){
   let target = event.currentTarget.id;
   switch(target){
     case "add_user":
-      //remove display none
-      document.getElementById("form_add_user").style.display = "flex";
+      //document.getElementById("form_add_user").style.display = "flex";
       document.getElementById("form_add_user").classList.add("animation_form");
+      document.getElementById("form_add_user").classList.remove("hidden");
+      //event pour fermer la fenetre :
+      document.getElementById("form_add_user").addEventListener("click", CloseWindow, false);
+      //event pour valider le formulaire :
+      document.getElementById("send_form_user").addEventListener("submit", API_add_User, false);
       nfc.readerMode(
         nfc.FLAG_READER_NFC_A | nfc.FLAG_READER_NO_PLATFORM_SOUNDS, 
         nfcTag => {
@@ -79,6 +83,16 @@ function addAnimation(event){
 function OffLineError(){
   alert("Vous êtes hors ligne");
 
+}
+function CloseWindow(event){
+  if(event.target.id == "form_add_user"){
+    document.getElementById("form_add_user").classList.remove("animation_form");
+    document.getElementById("form_add_user").classList.add("animation_form_close");
+    setTimeout(function(){
+      document.getElementById("form_add_user").classList.add("hidden");
+      document.getElementById("form_add_user").classList.remove("animation_form_close");
+    }, 999);
+  }
 }
 
 function startScan(){
@@ -151,4 +165,41 @@ return fetch(url)
     .catch(error => {
         throw error;
     });
+}
+
+function API_add_User(event){
+  event.preventDefault();
+  let form = document.getElementById("send_form_user");
+  //récupération des données du formulaire
+  let uid= document.getElementById("card_uid").value;
+  let nom = document.getElementById("user_name").value;
+  let prenom = document.getElementById("user_firstname").value;
+  let nbconsos = document.getElementById("user_nbconsos").value;
+  let url = "https://api.sae302.remcorp.fr/sae302-api/createUser.php?id="+uid+"&nom="+nom+"&prenom="+prenom;
+  fetch(url, {
+    method: 'GET'
+  })
+  .then(response => {
+    if (!response.ok) {
+        throw new Error('Network response was not ok');
+    }
+    return response.json();
+  })
+  .then(data => {
+    console.log(JSON.stringify(data));
+    if(data.status == "success"){
+      document.getElementById("form_add_user").classList.remove("animation_form");
+      document.getElementById("form_add_user").classList.add("animation_form_close");
+      setTimeout(function(){
+        document.getElementById("form_add_user").classList.add("hidden");
+        document.getElementById("form_add_user").classList.remove("animation_form_close");
+      }, 999);
+    }
+    else{
+      alert("Une erreur est survenue");
+    }
+  })
+  .catch(error => {
+      throw error;
+  });
 }

@@ -9,6 +9,7 @@
 body {
     -webkit-touch-callout: none;                /* prevent callout to copy image, etc when tap to hold */
     -webkit-text-size-adjust: none;             /* prevent webkit from resizing text to fit */
+    text-size-adjust: ;
     -webkit-user-select: none;                  /* prevent copy paste, to allow, change 'none' to 'text' */
     font-family: system-ui, -apple-system, -apple-system-font, 'Segoe UI', 'Roboto', sans-serif;
     font-size:12px;
@@ -216,24 +217,42 @@ h1 {
 
 }
 #form_add_user{
-    display: none;
     position: absolute;
     top: 30vh;
     width: 100vw;
     height: 100vh;
+    -webkit-backdrop-filter: blur(5px);
     backdrop-filter: blur(5px);
     top: 0px;
     justify-content: center;
     align-items: center;
 }
-.animation_form{
+#form_add_user.animation_form{
     animation: opacity 1s ease-in;
 }
 @keyframes opacity {
     0% {
+        display: flex;
+        visibility: visible;
         opacity: 0;
     }
     100% {
         opacity: 1;
     }
+}
+#form_add_user.animation_form_close{
+    animation: opacity_close 1s ease-in;
+}
+@keyframes opacity_close {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+        visibility: hidden;
+    }
+}
+.hidden{
+    display: none;
+    visibility: hidden;
 }
