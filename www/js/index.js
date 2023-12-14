@@ -6,21 +6,24 @@
 
 document.addEventListener('deviceready', onDeviceReady, false);
 console.log("Chargement de l'application");
-let buttons = document.getElementsByClassName("main_button");
-for(let i = 0; i < buttons.length; i++){
-  buttons[i].addEventListener("click", addAnimation, false);
-}
-function onDeviceReady() {
 
-  console.log('Running cordova-' + cordova.platformId + '@' + cordova.version);
-  /*--------------------------------------------------------------------------*/
-  //EVENTS LISTENERS
+
+//EVENTS LISTENERS
+function eventListeners(){
+  //Boutons du menu principal
+  let buttons = document.getElementsByClassName("main_button");
+  for(let i = 0; i < buttons.length; i++){
+    buttons[i].addEventListener("click", addAnimation, false);
+  }
+  //Bouton pour lancer le scan
   document.getElementById("scan").addEventListener("click", startScan, false);
-  document.addEventListener("offline", OffLineError, false);
-  //ajout listener pour déclancher animation boutonq
 
-  /*--------------------------------------------------------------------------*/
-  //INITIALISATION
+  //Event pour vérifier si l'appareil est hors ligne
+  document.addEventListener("offline", OffLineError, false);
+}
+
+//Initialisation et vérification des plugins et de l'API
+function init(){
   //ETAPE 1 : Vérifier si le NFC est disponible
   nfc.enabled(
     function() {
@@ -32,7 +35,17 @@ function onDeviceReady() {
     }
   );
   //ETAPE 2 : vérifier l'état de l'API (si elle est disponible)
-
+  
+}
+//FONCTION : onDeviceReady
+function onDeviceReady() {
+  console.log('Running cordova-' + cordova.platformId + '@' + cordova.version);
+  /*--------------------------------------------------------------------------*/
+  //EVENTS LISTENERS
+  eventListeners();
+  /*--------------------------------------------------------------------------*/
+  //INITIALISATION
+  init();
 }
 /*TEST ANIMATION*/
 function addAnimation(event){
@@ -50,7 +63,7 @@ function addAnimation(event){
       //event pour fermer la fenetre :
       document.getElementById("form_add_user").addEventListener("click", CloseWindow, false);
       //event pour valider le formulaire :
-      document.getElementById("send_form_user").addEventListener("submit", API_add_User, false);
+      document.getElementById("formulaire_add_user").addEventListener("submit", Add_User, false);
       nfc.readerMode(
         nfc.FLAG_READER_NFC_A | nfc.FLAG_READER_NO_PLATFORM_SOUNDS, 
         nfcTag => {
@@ -85,7 +98,7 @@ function OffLineError(){
 
 }
 function CloseWindow(event){
-  if(event.target.id == "form_add_user"){
+  if(event.target.id == "form_add_user" || event.target.id == "send_form_user"){ //a modifier pour fermeture quand envoie
     document.getElementById("form_add_user").classList.remove("animation_form");
     document.getElementById("form_add_user").classList.add("animation_form_close");
     setTimeout(function(){
@@ -166,22 +179,24 @@ return fetch(url)
         throw error;
     });
 }
-
-function API_add_User(event){
+function Add_User(event){
   event.preventDefault();
-  let form = document.getElementById("send_form_user");
   //récupération des données du formulaire
   let uid= document.getElementById("card_uid").value;
   let nom = document.getElementById("user_name").value;
   let prenom = document.getElementById("user_firstname").value;
   let nbconsos = document.getElementById("user_nbconsos").value;
-  let url = "https://api.sae302.remcorp.fr/sae302-api/createUser.php?id="+uid+"&nom="+nom+"&prenom="+prenom;
+  //appele de l'API
+  API_add_User(uid, nom, prenom, nbconsos);
+}
+function API_add_User(uid, nom, prenom, nbconsos){
+  let url = "https://api.sae302.remcorp.fr/sae302-api/createUser.php?id="+uid+"&nom="+nom+"&prenom="+prenom+"&nbconso="+nbconsos;
   fetch(url, {
     method: 'GET'
   })
   .then(response => {
     if (!response.ok) {
-        throw new Error('Network response was not ok');
+      Display_Error("Erreur Réseau" ,"API_add_User",response.status);
     }
     return response.json();
   })
@@ -196,10 +211,16 @@ function API_add_User(event){
       }, 999);
     }
     else{
-      alert("Une erreur est survenue");
+      //ajout en paramètre du nom de la fonction qui appelle l'erreur
+      Display_Error("Erreur de l'ajout" ,"API_add_User",data.message);
     }
   })
   .catch(error => {
       throw error;
   });
+}
+function Display_Error(message, fonction, details){
+  alert(message);
+  console.log(details);
+  console.log("Erreur de :"+fonction);
 }

@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta charset="utf-8">
-        <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://cdn.jsdelivr.net data: https://ssl.gstatic.com https://fonts.gstatic.com 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; media-src *; img-src 'self' data: content: remcorp.fr *.remcorp.fr; connect-src 'self' *.remcorp.fr;">
+        <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://cdn.jsdelivr.net data: https://ssl.gstatic.com https://fonts.gstatic.com 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; media-src *; img-src 'self' data: content: remcorp.fr *.remcorp.fr; connect-src 'self' *.remcorp.fr https://api.sae302.remcorp.fr;">
         <meta name="format-detection" content="telephone=no">
         <meta name="msapplication-tap-highlight" content="no">
         <meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
@@ -31,7 +31,7 @@
                         <h2 class="mdl-card__title-text">Ajout d'un utilisateur</h2>
                     </div>
                     <div class="mdl-card__supporting-text">
-                        <form action="#">
+                        <form id="formulaire_add_user">
                             <div class="mdl-textfield mdl-js-textfield">
                                 <input class="mdl-textfield__input" disabled type="text" id="card_uid">
                                 <label class="mdl-textfield__label" for="card_uid" id="card_uid_label">UID :</label>
@@ -48,9 +48,9 @@
                                 <input class="mdl-textfield__input" type="text" id="user_nbconsos">
                                 <label class="mdl-textfield__label" for="user_nbconsos">Nombre de consos :</label>
                             </div>
-                            <div class="mdl-card__actions mdl-card--border">
-                                <button type="submit" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" id="send_form_user">
-                                  Valider
+                            <div class="mdl-card__actions">
+                                <button type="submit" class="mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab" id="send_form_user">
+                                    <i class="material-icons">done</i>
                                 </a>
                             </div>
                         </form>
@@ -77,6 +77,6 @@
             </div>
 
             <script src="js/index.js"></script>
-        <div>
+        </div>
     </body>
 </html>

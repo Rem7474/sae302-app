@@ -229,11 +229,11 @@ h1 {
 }
 #form_add_user.animation_form{
     animation: opacity 1s ease-in;
+    display: flex;
+    visibility: visible;
 }
 @keyframes opacity {
     0% {
-        display: flex;
-        visibility: visible;
         opacity: 0;
     }
     100% {
@@ -242,6 +242,7 @@ h1 {
 }
 #form_add_user.animation_form_close{
     animation: opacity_close 1s ease-in;
+    display: flex;
 }
 @keyframes opacity_close {
     0% {
@@ -255,4 +256,10 @@ h1 {
 .hidden{
     display: none;
     visibility: hidden;
+}
+.mdl-card{
+    box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.75);
+}
+.mdl-card__actions{
+    text-align: end;
 }
