@@ -72,13 +72,7 @@ function addAnimation(event){
   let close;
   switch(target){
     case "add_user":
-      card = document.getElementById("card_"+target);
-      card.classList.add("animation_form");
-      card.classList.remove("hidden");
-      //event pour fermer la fenetre :
-      close = document.getElementById("cancel_"+target);
-      close.addEventListener("click", CloseWindow, false);
-      card.addEventListener("click", CloseWindow, false);
+      OpenWindow(target);
       //event pour valider le formulaire :
       document.getElementById("formulaire_add_user").addEventListener("submit", Add_User, false);
       updateForm(["card_uid", "user_name", "user_firstname", "user_nbconsos"]);
@@ -93,20 +87,24 @@ function addAnimation(event){
         );
       }
       break;
-    case "add_product":
-      console.log("panier");
+    case "update_product":
+      //update ou add d'un produit
+      console.log("update_product");
+      OpenWindow(target);
+      //event pour valider le formulaire :
+      document.getElementById("formulaire_update_product").addEventListener("submit", Update_Product, false);
+      //ouverture du scan de code barre
+      if (!test){
+        ScanUpdateProduct();
+
+      }
+
       break;
     case "view_products":
       console.log("historique");
       break;
     case "view_users":
-      card = document.getElementById("card_"+target);
-      card.classList.add("animation_form");
-      card.classList.remove("hidden");
-      //event pour fermer la fenetre :
-      close = document.getElementById("cancel_"+target);
-      close.addEventListener("click", CloseWindow, false);
-      card.addEventListener("click", CloseWindow, false);
+      OpenWindow(target);
       if (!test){
         nfc.readerMode(
           nfc.FLAG_READER_NFC_A | nfc.FLAG_READER_NO_PLATFORM_SOUNDS, 
@@ -134,6 +132,15 @@ function addAnimation(event){
 function OffLineError(){
   alert("Vous êtes hors ligne");
 
+}
+function OpenWindow(id){
+  card = document.getElementById("card_"+id);
+  card.classList.add("animation_form");
+  card.classList.remove("hidden");
+  //event pour fermer la fenetre :
+  close = document.getElementById("cancel_"+id);
+  close.addEventListener("click", CloseWindow, false);
+  card.addEventListener("click", CloseWindow, false);
 }
 function CloseWindow(event){
   if(event.target.id == "card_add_user" || event.target.id == "cancel_add_user" || event.target.id =="formulaire_add_user"){ //a modifier pour fermeture quand envoie
@@ -169,7 +176,7 @@ function updateForm(ids){
 }
 function startScan(){
   console.log("startScan");
-cordova.plugins.barcodeScanner.scan(
+  cordova.plugins.barcodeScanner.scan(
   function (result) {
     //appel de la fonction pour ajouter au panier, avec le code barre en paramètre (+pour le premier article affiches les boutons de suppression et de validation)
     Ajout_panier(result.text);
@@ -295,15 +302,24 @@ function view_User(uid){
     });
 
 }
+function Update_Product(event){
+  event.preventDefault();
+  //ETAPE 1 : scan du code barre
+  //ETAPE 2 : récupération des infos du produit avec une requête ajax pour savoir si il existe
+  //ETAPE 3 : si il existe on affiche les infos dans le formulaire
+  //ETAPE 4 : si il n'existe pas on le crée
+  //ETAPE 5 : on update son stock avec une requête ajax
+  //ETAPE 6 : on affiche le message de confirmation
+  
+  
+}
 function API_infos_User(uid){
   let url = "https://api.sae302.remcorp.fr/sae302-api/getUser.php?id="+uid;
   return fetch(url)    
 }
 function API_add_User(uid, nom, prenom, nbconsos){
   let url = "https://api.sae302.remcorp.fr/sae302-api/createUser.php?id="+uid+"&nom="+nom+"&prenom="+prenom+"&nbconso="+nbconsos;
-  return fetch(url, {
-    method: 'GET'
-  })
+  return fetch(url)
   .then(response => {
     if (!response.ok) {
       Display_Error("Erreur Réseau" ,"API_add_User",response.status);
@@ -318,8 +334,55 @@ function API_add_User(uid, nom, prenom, nbconsos){
       throw error;
   });
 }
+function API_infos_Article(barcode){
+  let url = "https://api.sae302.remcorp.fr/sae302-api/getProduct.php?barcode="+barcode;
+  return fetch(url)
+}
 function Display_Error(message, fonction, details){
   alert(message);
   console.log(details);
   console.log("Erreur de :"+fonction);
+}
+function ScanUpdateProduct(){
+  //ouverture du scan de code barre puis appel de la fonction pour récupérer les infos du produit
+  cordova.plugins.barcodeScanner.scan(
+    function (result) {
+      API_infos_Article(result.text)
+        .then(response => {
+        if (!response.ok) {
+          Display_Error("Erreur Réseau" ,"ScanUpdateProduct",response.status);
+        }
+        return response.json();
+      })
+        .then(data => {
+          if (data.message == "Product found") {
+            //affiche les infos dans le formulaire
+            
+
+          }
+          else{
+            //laisse l'utilisateur remplir le formulaire en sachant qu'il faudra créer le produit
+          }
+        })
+        .catch(error => {
+            //ERROR réseau
+        });
+    },
+    function (error) {
+        alert("Scanning failed: " + error);
+    },
+    {
+        preferFrontCamera : false, // iOS and Android
+        showFlipCameraButton : false, // iOS and Android
+        showTorchButton : true, // iOS and Android
+        torchOn: true, // Android, launch with the torch switched on (if available)
+        saveHistory: false, // Android, save scan history (default false)
+        prompt : "Placer le code barre a lire dans la zone", // Android
+        resultDisplayDuration: 500, // Android, display scanned text for X ms. 0 suppresses it entirely, default 1500
+        formats : "all", // default: all but PDF_417 and RSS_EXPANDED
+        orientation : "portrait", // Android only (portrait|landscape), default unset so it rotates with the device
+        disableAnimations : true, // iOS
+        disableSuccessBeep: true // iOS and Android
+    }
+  );
 }

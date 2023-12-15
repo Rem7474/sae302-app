@@ -36,7 +36,7 @@
                         <form id="formulaire_add_user">
                             <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" id="card_uid_div">
                                 <input class="mdl-textfield__input" disabled type="text" id="card_uid">
-                                <label class="mdl-textfield__label" for="card_uid" id="card_uid_label">UID :</label>
+                                <label class="mdl-textfield__label" for="card_uid" id="card_uid_label">UID</label>
                             </div>
                             <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" id="user_name_div">
                                 <input class="mdl-textfield__input" type="text" id="user_name" required>
@@ -48,7 +48,7 @@
                             </div>
                             <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" id="user_nbconsos_div">
                                 <input class="mdl-textfield__input" type="text" pattern="-?[0-9]*(\.[0-9]+)?" id="user_nbconsos" required>
-                                <label class="mdl-textfield__label" for="user_nbconsos" id="user_nbconsos_label">Nombre de consos :</label>
+                                <label class="mdl-textfield__label" for="user_nbconsos" id="user_nbconsos_label">Nombre de consos</label>
                                 <span class="mdl-textfield__error">Ce n'est pas un nombre !</span>
                             </div>
                             <div class="mdl-card__actions">
@@ -72,7 +72,7 @@
                         <form id="formulaire_view_users">
                             <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" id="view_card_uid_div">
                                 <input class="mdl-textfield__input" disabled type="text" id="view_card_uid">
-                                <label class="mdl-textfield__label" for="view_card_uid" id="view_card_uid_label">UID :</label>
+                                <label class="mdl-textfield__label" for="view_card_uid" id="view_card_uid_label">UID</label>
                             </div>
                             <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" id="view_user_name_div">
                                 <input class="mdl-textfield__input" disabled type="text" id="view_user_name" required>
@@ -84,11 +84,48 @@
                             </div>
                             <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" id="view_user_nbconsos_div">
                                 <input class="mdl-textfield__input" disabled type="text" pattern="-?[0-9]*(\.[0-9]+)?" id="view_user_nbconsos" required>
-                                <label class="mdl-textfield__label" for="view_user_nbconsos" id="view_user_nbconsos_label">Nombre de consos :</label>
+                                <label class="mdl-textfield__label" for="view_user_nbconsos" id="view_user_nbconsos_label">Nombre de consos</label>
+                                <span class="mdl-textfield__error">Ce n'est pas un nombre !</span>
+                            </div>
+                        </form>
+                        
+                    </div>
+                </div>
+            </div>
+
+            <div id="card_update_product" class="hidden card_menu">
+                <div class="mdl-card">
+                    <i class="bi bi-x cancel" id="cancel_update_product"></i>
+                    <div class="mdl-card__title">
+                        <h2 class="mdl-card__title-text">Ajout/Modification d'un produit</h2>
+                    </div>
+                    <div class="mdl-card__supporting-text">
+                        <form id="formulaire_update_product">
+                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" id="barcode_div">
+                                <input class="mdl-textfield__input" disabled type="text" id="barcode">
+                                <label class="mdl-textfield__label" for="barcode" id="barcode_label">code barre</label>
+                            </div>
+                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" id="product_name_div">
+                                <input class="mdl-textfield__input" type="text" id="product_name" required>
+                                <label class="mdl-textfield__label" for="product_name" id="product_name_label">Nom</label>
+                            </div>
+                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" id="product_order_price_div">
+                                <input class="mdl-textfield__input" type="text" pattern="-?[0-9]*(\.[0-9]+)?" id="product_order_price" required>
+                                <label class="mdl-textfield__label" for="product_order_price" id="product_order_price_label">Prix achat</label>
+                                <span class="mdl-textfield__error">Ce n'est pas un nombre !</span>
+                            </div>
+                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" id="product_order_sale_div">
+                                <input class="mdl-textfield__input" type="text" pattern="-?[0-9]*(\.[0-9]+)?" id="product_order_sale" required>
+                                <label class="mdl-textfield__label" for="product_order_sale" id="product_order_sale_label">Prix vente</label>
+                                <span class="mdl-textfield__error">Ce n'est pas un nombre !</span>
+                            </div>
+                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" id="product_stock_div">
+                                <input class="mdl-textfield__input" type="text" pattern="-?[0-9]*(\.[0-9]+)?" id="product_stock" required>
+                                <label class="mdl-textfield__label" for="product_stock" id="product_stock_label">Quantité</label>
                                 <span class="mdl-textfield__error">Ce n'est pas un nombre !</span>
                             </div>
                             <div class="mdl-card__actions">
-                                <button type="submit" class="mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab" id="send_form_view_user">
+                                <button type="submit" class="mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab" id="send_form_user">
                                     <i class="material-icons">done</i>
                                 </button>
                             </div>
@@ -101,7 +138,7 @@
 
             <div class="card-container">
                 <div class="card main_button" id="add_user"><i class="bi bi-person-fill-add"></i></div>
-                <div class="card main_button" id="add_product"><i class="bi bi-database-fill-add"></i></div>
+                <div class="card main_button" id="update_product"><i class="bi bi-database-fill-add"></i></div>
                 <div class="card main_button" id="view_users"><i class="bi bi-person-vcard-fill"></i></div>
                 <div class="card main_button" id="view_products"><i class="bi bi-database-fill-gear"></i></div>
             </div>
