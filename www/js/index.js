@@ -84,7 +84,7 @@ function addAnimation(event){
           nfc.FLAG_READER_NFC_A | nfc.FLAG_READER_NO_PLATFORM_SOUNDS, 
           nfcTag => {
             document.getElementById("card_uid").value = nfc.bytesToHexString(nfcTag.id);
-            document.getElementById("card_uid_label").classList.add("is-dirty");
+            document.getElementById("card_uid_div").classList.add("is-dirty");
           },
           error => console.log('NFC reader mode failed', error)
         );
@@ -123,6 +123,15 @@ function CloseWindow(event){
       card.classList.add("hidden");
       card.classList.remove("animation_form_close");
     }, 999);
+    //reset du formulaire
+    document.getElementById("card_uid").value = "";
+    document.getElementById("user_name").value = "";
+    document.getElementById("user_firstname").value = "";
+    document.getElementById("user_nbconsos").value = "";
+    document.getElementById("card_uid_div").classList.remove("is-dirty");
+    document.getElementById("user_name_div").classList.remove("is-dirty");
+    document.getElementById("user_firstname_div").classList.remove("is-dirty");
+    document.getElementById("user_nbconsos_div").classList.remove("is-dirty");
   }
 }
 
@@ -223,15 +232,6 @@ function Add_User(event){
     })
     .finally(() => {
       CloseWindow(event);
-      //reset du formulaire
-      document.getElementById("card_uid").value = "";
-      document.getElementById("user_name").value = "";
-      document.getElementById("user_firstname").value = "";
-      document.getElementById("user_nbconsos").value = "";
-      document.getElementById("card_uid_div").classList.remove("is-dirty");
-      document.getElementById("user_name_div").classList.remove("is-dirty");
-      document.getElementById("user_firstname_div").classList.remove("is-dirty");
-      document.getElementById("user_nbconsos_div").classList.remove("is-dirty");
     });
 
 }
