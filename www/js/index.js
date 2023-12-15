@@ -221,11 +221,10 @@ function API_add_User(uid, nom, prenom, nbconsos){
     if (!response.ok) {
       Display_Error("Erreur Réseau" ,"API_add_User",response.status);
     }
-    return response.json();
   })
   .then(data => {
     console.log(JSON.stringify(data));
-    if(data.status == "success"){
+    if(data.message == "User added"){
       let card = document.getElementById("card_add_user");
       card.classList.remove("animation_form");
       card.classList.add("animation_form_close");
