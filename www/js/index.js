@@ -205,20 +205,25 @@ function Add_User(event){
   let prenom = document.getElementById("user_firstname").value;
   let nbconsos = document.getElementById("user_nbconsos").value;
   //appele de l'API
-  let status = API_add_User(uid, nom, prenom, nbconsos);
-  if (status == "User added"){
-    //affichage de la confettis
-    confetti({
-      particleCount: 100,
-      spread: 70,
-      origin: { y: 0.8 }
+  API_add_User(uid, nom, prenom, nbconsos)
+    .then(status => {
+      if (status == "User added") {
+        // Affichage de la confettis
+        confetti({
+          particleCount: 100,
+          spread: 70,
+          origin: { y: 0.8 }
+        });
+      } else {
+        Display_Error("Erreur :" + status, "API_add_User", status);
+      }
+    })
+    .catch(error => {
+      Display_Error("Erreur Réseau", "API_add_User", error.message);
+    })
+    .finally(() => {
+      CloseWindow(event);
     });
-  }
-  else{
-    Display_Error("Erreur :"+status ,"API_add_User",status);
-  }
-  
-  CloseWindow(event);
 
 }
 function API_add_User(uid, nom, prenom, nbconsos){
