@@ -84,7 +84,7 @@ function addAnimation(event){
           nfc.FLAG_READER_NFC_A | nfc.FLAG_READER_NO_PLATFORM_SOUNDS, 
           nfcTag => {
             document.getElementById("card_uid").value = nfc.bytesToHexString(nfcTag.id);
-            document.getElementById("card_uid_label").style.display = "none";
+            document.getElementById("card_uid_label").classList.add("is-dirty");
           },
           error => console.log('NFC reader mode failed', error)
         );
@@ -115,7 +115,7 @@ function OffLineError(){
 
 }
 function CloseWindow(event){
-  if(event.target.id == "card_add_user" || event.target.id == "cancel_add_user"){ //a modifier pour fermeture quand envoie
+  if(event.target.id == "card_add_user" || event.target.id == "cancel_add_user" || event.target.id =="formulaire_add_user"){ //a modifier pour fermeture quand envoie
     let card = document.getElementById("card_add_user");
     card.classList.remove("animation_form");
     card.classList.add("animation_form_close");
@@ -223,6 +223,15 @@ function Add_User(event){
     })
     .finally(() => {
       CloseWindow(event);
+      //reset du formulaire
+      document.getElementById("card_uid").value = "";
+      document.getElementById("user_name").value = "";
+      document.getElementById("user_firstname").value = "";
+      document.getElementById("user_nbconsos").value = "";
+      document.getElementById("card_uid_div").classList.remove("is-dirty");
+      document.getElementById("user_name_div").classList.remove("is-dirty");
+      document.getElementById("user_firstname_div").classList.remove("is-dirty");
+      document.getElementById("user_nbconsos_div").classList.remove("is-dirty");
     });
 
 }
