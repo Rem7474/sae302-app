@@ -199,32 +199,44 @@ return fetch(url)
 }
 function Add_User(event){
   event.preventDefault();
-  confetti({
-    particleCount: 100,
-    spread: 70,
-    origin: { y: 0.8 }
-  });
   //récupération des données du formulaire
   let uid= document.getElementById("card_uid").value;
   let nom = document.getElementById("user_name").value;
   let prenom = document.getElementById("user_firstname").value;
   let nbconsos = document.getElementById("user_nbconsos").value;
   //appele de l'API
-  API_add_User(uid, nom, prenom, nbconsos);
+  let status = API_add_User(uid, nom, prenom, nbconsos);
+  if (status == "User added"){
+    //affichage de la confettis
+    confetti({
+      particleCount: 100,
+      spread: 70,
+      origin: { y: 0.8 }
+    });
+  }
+  else{
+    Display_Error("Erreur :"+status ,"API_add_User",status);
+  }
+  
+  CloseWindow(event);
+
 }
 function API_add_User(uid, nom, prenom, nbconsos){
   let url = "https://api.sae302.remcorp.fr/sae302-api/createUser.php?id="+uid+"&nom="+nom+"&prenom="+prenom+"&nbconso="+nbconsos;
-  fetch(url, {
+  return fetch(url, {
     method: 'GET'
   })
   .then(response => {
     if (!response.ok) {
       Display_Error("Erreur Réseau" ,"API_add_User",response.status);
     }
+    return response.json();
   })
   .then(data => {
     console.log(JSON.stringify(data));
+    /*
     if(data.message == "User added"){
+      
       let card = document.getElementById("card_add_user");
       card.classList.remove("animation_form");
       card.classList.add("animation_form_close");
@@ -232,11 +244,10 @@ function API_add_User(uid, nom, prenom, nbconsos){
         card.classList.add("hidden");
         card.classList.remove("animation_form_close");
       }, 999);
+      
     }
-    else{
-      //ajout en paramètre du nom de la fonction qui appelle l'erreur
-      Display_Error("Erreur de l'ajout" ,"API_add_User",data.message);
-    }
+    */
+    return data.message;
   })
   .catch(error => {
       throw error;
