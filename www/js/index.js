@@ -6,7 +6,7 @@
 
 //VARIABLE TEST
 //METTRE A FALSE POUR TESTER AVEC LES PLUGINS
-let test = true;
+let test = false;
 if (test){
   console.log("test");
   eventListeners();
