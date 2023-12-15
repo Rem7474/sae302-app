@@ -6,7 +6,7 @@
 
 //VARIABLE TEST
 //METTRE A FALSE POUR TESTER AVEC LES PLUGINS
-let test = true;
+let test = false;
 if (test){
   console.log("test");
   eventListeners();
@@ -112,8 +112,9 @@ function addAnimation(event){
           nfc.FLAG_READER_NFC_A | nfc.FLAG_READER_NO_PLATFORM_SOUNDS, 
           nfcTag => {
             //appelle de la fonction pour faire la requête ajax et afficher les infos de l'utilisateur
-            document.getElementById("card_uid").value = nfc.bytesToHexString(nfcTag.id);
-            document.getElementById("card_uid_div").classList.add("is-dirty");
+            document.getElementById("view_card_uid").value = nfc.bytesToHexString(nfcTag.id);
+            document.getElementById("view_card_uid_div").classList.add("is-dirty");
+            view_User(nfc.bytesToHexString(nfcTag.id));
           },
           error => console.log('NFC reader mode failed', error)
         );
@@ -136,17 +137,24 @@ function OffLineError(){
 }
 function CloseWindow(event){
   if(event.target.id == "card_add_user" || event.target.id == "cancel_add_user" || event.target.id =="formulaire_add_user"){ //a modifier pour fermeture quand envoie
-    let card = document.getElementById("card_add_user");
-    card.classList.remove("animation_form");
-    card.classList.add("animation_form_close");
-    setTimeout(function(){
-      card.classList.add("hidden");
-      card.classList.remove("animation_form_close");
-    }, 999);
+    CloseAnimation("card_add_user");
     //reset du formulaire
     updateForm(["card_uid", "user_name", "user_firstname", "user_nbconsos"]);
-    
   }
+  if(event.target.id == "card_view_users" || event.target.id == "cancel_view_users"){
+    CloseAnimation("card_view_users");
+    //reset du formulaire
+    updateForm(["view_card_uid", "view_user_name", "view_user_firstname", "view_user_nbconsos"]);
+  }
+}
+function CloseAnimation(id){
+  let card = document.getElementById(id);
+  card.classList.remove("animation_form");
+  card.classList.add("animation_form_close");
+  setTimeout(function(){
+    card.classList.add("hidden");
+    card.classList.remove("animation_form_close");
+  }, 475);
 }
 function updateForm(ids){
   //reset des valeurs
@@ -271,13 +279,14 @@ function view_User(uid){
     .then(data => {
       console.log(JSON.stringify(data));
       if (data.message == "User found") {
-        // Affichage de la confettis
-        confetti({
-          particleCount: 100,
-          spread: 70,
-          origin: { y: 0.8 }
-        });
-      } else {
+        document.getElementById("view_user_name").value = data.utilisateur_nom;
+        document.getElementById("view_user_name_div").classList.add("is-dirty");
+        document.getElementById("view_user_firstname").value = data.utilisateur_prenom;
+        document.getElementById("view_user_firstname_div").classList.add("is-dirty");
+        document.getElementById("view_user_nbconsos").value = data.utilisateur_conso;
+        document.getElementById("view_user_nbconsos_div").classList.add("is-dirty");
+      }
+      else{
         Display_Error("Erreur :" + data.message, "view_User", data.message);
       }
     })
@@ -303,19 +312,6 @@ function API_add_User(uid, nom, prenom, nbconsos){
   })
   .then(data => {
     console.log(JSON.stringify(data));
-    /*
-    if(data.message == "User added"){
-      
-      let card = document.getElementById("card_add_user");
-      card.classList.remove("animation_form");
-      card.classList.add("animation_form_close");
-      setTimeout(function(){
-        card.classList.add("hidden");
-        card.classList.remove("animation_form_close");
-      }, 999);
-      
-    }
-    */
     return data.message;
   })
   .catch(error => {

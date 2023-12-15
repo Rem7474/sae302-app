@@ -228,7 +228,7 @@ h1 {
     align-items: center;
 }
 .card_menu.animation_form{
-    animation: opacity 1s ease-in;
+    animation: opacity 0.5s ease-in;
     display: flex;
     visibility: visible;
 }
@@ -241,7 +241,7 @@ h1 {
     }
 }
 .card_menu.animation_form_close{
-    animation: opacity_close 1s ease-in;
+    animation: opacity_close 0.5s ease-in;
     display: flex;
 }
 @keyframes opacity_close {
