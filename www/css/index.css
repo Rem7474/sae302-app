@@ -216,7 +216,7 @@ h1 {
     color:#f2d3b4;
 
 }
-#form_add_user{
+#card_add_user{
     position: absolute;
     top: 30vh;
     width: 100vw;
@@ -227,7 +227,7 @@ h1 {
     justify-content: center;
     align-items: center;
 }
-#form_add_user.animation_form{
+#card_add_user.animation_form{
     animation: opacity 1s ease-in;
     display: flex;
     visibility: visible;
@@ -240,7 +240,7 @@ h1 {
         opacity: 1;
     }
 }
-#form_add_user.animation_form_close{
+#card_add_user.animation_form_close{
     animation: opacity_close 1s ease-in;
     display: flex;
 }
@@ -262,4 +262,9 @@ h1 {
 }
 .mdl-card__actions{
     text-align: end;
+}
+.cancel{
+    align-self: end;
+    font-size: 2em;
+    cursor: pointer;
 }

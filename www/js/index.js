@@ -4,6 +4,14 @@
 //DESCRIPTION : Fichier javascript pour l'application mobile
 //PLUGINS : community-cordova-plugin-nfc, cordova-plugin-codescanner
 
+//VARIABLE TEST
+//METTRE A FALSE POUR TESTER AVEC LES PLUGINS
+let test = true;
+if (test){
+  console.log("test");
+  eventListeners();
+}
+
 document.addEventListener('deviceready', onDeviceReady, false);
 console.log("Chargement de l'application");
 
@@ -31,7 +39,7 @@ function init(){
     },
     function() {
         console.log("NFC n'est pas disponible sur cet appareil.");
-        //afficher un message d'erreur
+        Display_Error("NFC indisponible", "init", "NFC n'est pas disponible sur cet appareil.")
     }
   );
   //ETAPE 2 : vérifier l'état de l'API (si elle est disponible)
@@ -47,31 +55,40 @@ function onDeviceReady() {
   //INITIALISATION
   init();
 }
+
+
 /*TEST ANIMATION*/
 function addAnimation(event){
   let button = event.currentTarget;
+
+  //Animation de click
   button.classList.add("click");
   setTimeout(function(){
     button.classList.remove("click");
   }, 500);
+
   let target = event.currentTarget.id;
   switch(target){
     case "add_user":
-      //document.getElementById("form_add_user").style.display = "flex";
-      document.getElementById("form_add_user").classList.add("animation_form");
-      document.getElementById("form_add_user").classList.remove("hidden");
+      let card = document.getElementById("card_"+target);
+      card.classList.add("animation_form");
+      card.classList.remove("hidden");
       //event pour fermer la fenetre :
-      document.getElementById("form_add_user").addEventListener("click", CloseWindow, false);
+      let close = document.getElementById("cancel_add_user");
+      close.addEventListener("click", CloseWindow, false);
+      card.addEventListener("click", CloseWindow, false);
       //event pour valider le formulaire :
       document.getElementById("formulaire_add_user").addEventListener("submit", Add_User, false);
-      nfc.readerMode(
-        nfc.FLAG_READER_NFC_A | nfc.FLAG_READER_NO_PLATFORM_SOUNDS, 
-        nfcTag => {
-          document.getElementById("card_uid").value = nfc.bytesToHexString(nfcTag.id);
-          document.getElementById("card_uid_label").style.display = "none";
-        },
-        error => console.log('NFC reader mode failed', error)
-    );
+      if (!test){
+        nfc.readerMode(
+          nfc.FLAG_READER_NFC_A | nfc.FLAG_READER_NO_PLATFORM_SOUNDS, 
+          nfcTag => {
+            document.getElementById("card_uid").value = nfc.bytesToHexString(nfcTag.id);
+            document.getElementById("card_uid_label").style.display = "none";
+          },
+          error => console.log('NFC reader mode failed', error)
+        );
+      }
       break;
     case "add_product":
       console.log("panier");
@@ -98,12 +115,13 @@ function OffLineError(){
 
 }
 function CloseWindow(event){
-  if(event.target.id == "form_add_user" || event.target.id == "send_form_user"){ //a modifier pour fermeture quand envoie
-    document.getElementById("form_add_user").classList.remove("animation_form");
-    document.getElementById("form_add_user").classList.add("animation_form_close");
+  if(event.target.id == "card_add_user" || event.target.id == "cancel_add_user"){ //a modifier pour fermeture quand envoie
+    let card = document.getElementById("card_add_user");
+    card.classList.remove("animation_form");
+    card.classList.add("animation_form_close");
     setTimeout(function(){
-      document.getElementById("form_add_user").classList.add("hidden");
-      document.getElementById("form_add_user").classList.remove("animation_form_close");
+      card.classList.add("hidden");
+      card.classList.remove("animation_form_close");
     }, 999);
   }
 }
@@ -203,11 +221,12 @@ function API_add_User(uid, nom, prenom, nbconsos){
   .then(data => {
     console.log(JSON.stringify(data));
     if(data.status == "success"){
-      document.getElementById("form_add_user").classList.remove("animation_form");
-      document.getElementById("form_add_user").classList.add("animation_form_close");
+      let card = document.getElementById("card_add_user");
+      card.classList.remove("animation_form");
+      card.classList.add("animation_form_close");
       setTimeout(function(){
-        document.getElementById("form_add_user").classList.add("hidden");
-        document.getElementById("form_add_user").classList.remove("animation_form_close");
+        card.classList.add("hidden");
+        card.classList.remove("animation_form_close");
       }, 999);
     }
     else{

@@ -25,8 +25,9 @@
             <div id="panier">
                 <h1>Panier</h1>
             </div>
-            <div id="form_add_user" class="hidden">
+            <div id="card_add_user" class="hidden">
                 <div class="mdl-card">
+                    <i class="bi bi-x cancel" id="cancel_add_user"></i>
                     <div class="mdl-card__title">
                         <h2 class="mdl-card__title-text">Ajout d'un utilisateur</h2>
                     </div>
@@ -37,15 +38,15 @@
                                 <label class="mdl-textfield__label" for="card_uid" id="card_uid_label">UID :</label>
                             </div>
                             <div class="mdl-textfield mdl-js-textfield">
-                                <input class="mdl-textfield__input" type="text" id="user_name">
+                                <input class="mdl-textfield__input" type="text" id="user_name" required>
                                 <label class="mdl-textfield__label" for="user_name">Nom</label>
                             </div>
                             <div class="mdl-textfield mdl-js-textfield">
-                                <input class="mdl-textfield__input" type="text" id="user_firstname">
+                                <input class="mdl-textfield__input" type="text" id="user_firstname" required>
                                 <label class="mdl-textfield__label" for="user_firstname">Prénom</label>
                             </div>
                             <div class="mdl-textfield mdl-js-textfield">
-                                <input class="mdl-textfield__input" type="text" id="user_nbconsos">
+                                <input class="mdl-textfield__input" type="number" id="user_nbconsos" required>
                                 <label class="mdl-textfield__label" for="user_nbconsos">Nombre de consos :</label>
                             </div>
                             <div class="mdl-card__actions">
