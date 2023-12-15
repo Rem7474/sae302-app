@@ -199,6 +199,11 @@ return fetch(url)
 }
 function Add_User(event){
   event.preventDefault();
+  confetti({
+    particleCount: 100,
+    spread: 70,
+    origin: { y: 0.8 }
+  });
   //récupération des données du formulaire
   let uid= document.getElementById("card_uid").value;
   let nom = document.getElementById("user_name").value;
