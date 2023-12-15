@@ -26,7 +26,7 @@
             <div id="panier">
                 <h1>Panier</h1>
             </div>
-            <div id="card_add_user" class="hidden">
+            <div id="card_add_user" class="hidden card_menu">
                 <div class="mdl-card">
                     <i class="bi bi-x cancel" id="cancel_add_user"></i>
                     <div class="mdl-card__title">
@@ -34,21 +34,22 @@
                     </div>
                     <div class="mdl-card__supporting-text">
                         <form id="formulaire_add_user">
-                            <div class="mdl-textfield mdl-js-textfield" id="card_uid_div">
+                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" id="card_uid_div">
                                 <input class="mdl-textfield__input" disabled type="text" id="card_uid">
                                 <label class="mdl-textfield__label" for="card_uid" id="card_uid_label">UID :</label>
                             </div>
-                            <div class="mdl-textfield mdl-js-textfield" id="user_name_div">
+                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" id="user_name_div">
                                 <input class="mdl-textfield__input" type="text" id="user_name" required>
                                 <label class="mdl-textfield__label" for="user_name" id="user_name_label">Nom</label>
                             </div>
-                            <div class="mdl-textfield mdl-js-textfield" id="user_firstname_div">
+                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" id="user_firstname_div">
                                 <input class="mdl-textfield__input" type="text" id="user_firstname" required>
                                 <label class="mdl-textfield__label" for="user_firstname" id="user_firstname_label">Prenom</label>
                             </div>
-                            <div class="mdl-textfield mdl-js-textfield" id="user_nbconsos_div">
-                                <input class="mdl-textfield__input" type="number" id="user_nbconsos" required>
+                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" id="user_nbconsos_div">
+                                <input class="mdl-textfield__input" type="text" pattern="-?[0-9]*(\.[0-9]+)?" id="user_nbconsos" required>
                                 <label class="mdl-textfield__label" for="user_nbconsos" id="user_nbconsos_label">Nombre de consos :</label>
+                                <span class="mdl-textfield__error">Ce n'est pas un nombre !</span>
                             </div>
                             <div class="mdl-card__actions">
                                 <button type="submit" class="mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab" id="send_form_user">
@@ -60,6 +61,44 @@
                     </div>
                 </div>
             </div>
+
+            <div id="card_view_users" class="hidden card_menu">
+                <div class="mdl-card">
+                    <i class="bi bi-x cancel" id="cancel_view_users"></i>
+                    <div class="mdl-card__title">
+                        <h2 class="mdl-card__title-text">Ajout d'un utilisateur</h2>
+                    </div>
+                    <div class="mdl-card__supporting-text">
+                        <form id="formulaire_view_users">
+                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" id="card_uid_div">
+                                <input class="mdl-textfield__input" disabled type="text" id="card_uid">
+                                <label class="mdl-textfield__label" for="card_uid" id="card_uid_label">UID :</label>
+                            </div>
+                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" id="user_name_div">
+                                <input class="mdl-textfield__input" disabled type="text" id="user_name" required>
+                                <label class="mdl-textfield__label" for="user_name" id="user_name_label">Nom</label>
+                            </div>
+                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" id="user_firstname_div">
+                                <input class="mdl-textfield__input" disabled type="text" id="user_firstname" required>
+                                <label class="mdl-textfield__label" for="user_firstname" id="user_firstname_label">Prenom</label>
+                            </div>
+                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" id="user_nbconsos_div">
+                                <input class="mdl-textfield__input" disabled type="text" pattern="-?[0-9]*(\.[0-9]+)?" id="user_nbconsos" required>
+                                <label class="mdl-textfield__label" for="user_nbconsos" id="user_nbconsos_label">Nombre de consos :</label>
+                                <span class="mdl-textfield__error">Ce n'est pas un nombre !</span>
+                            </div>
+                            <div class="mdl-card__actions">
+                                <button type="submit" class="mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab" id="send_form_view_user">
+                                    <i class="material-icons">done</i>
+                                </button>
+                            </div>
+                        </form>
+                        
+                    </div>
+                </div>
+            </div>
+
+
             <div class="card-container">
                 <div class="card main_button" id="add_user"><i class="bi bi-person-fill-add"></i></div>
                 <div class="card main_button" id="add_product"><i class="bi bi-database-fill-add"></i></div>

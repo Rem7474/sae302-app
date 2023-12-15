@@ -6,7 +6,7 @@
 
 //VARIABLE TEST
 //METTRE A FALSE POUR TESTER AVEC LES PLUGINS
-let test = false;
+let test = true;
 if (test){
   console.log("test");
   eventListeners();
@@ -68,17 +68,20 @@ function addAnimation(event){
   }, 500);
 
   let target = event.currentTarget.id;
+  let card;
+  let close;
   switch(target){
     case "add_user":
-      let card = document.getElementById("card_"+target);
+      card = document.getElementById("card_"+target);
       card.classList.add("animation_form");
       card.classList.remove("hidden");
       //event pour fermer la fenetre :
-      let close = document.getElementById("cancel_add_user");
+      close = document.getElementById("cancel_"+target);
       close.addEventListener("click", CloseWindow, false);
       card.addEventListener("click", CloseWindow, false);
       //event pour valider le formulaire :
       document.getElementById("formulaire_add_user").addEventListener("submit", Add_User, false);
+      updateForm(["card_uid", "user_name", "user_firstname", "user_nbconsos"]);
       if (!test){
         nfc.readerMode(
           nfc.FLAG_READER_NFC_A | nfc.FLAG_READER_NO_PLATFORM_SOUNDS, 
@@ -97,7 +100,24 @@ function addAnimation(event){
       console.log("historique");
       break;
     case "view_users":
-      console.log("parametres");
+      card = document.getElementById("card_"+target);
+      card.classList.add("animation_form");
+      card.classList.remove("hidden");
+      //event pour fermer la fenetre :
+      close = document.getElementById("cancel_"+target);
+      close.addEventListener("click", CloseWindow, false);
+      card.addEventListener("click", CloseWindow, false);
+      if (!test){
+        nfc.readerMode(
+          nfc.FLAG_READER_NFC_A | nfc.FLAG_READER_NO_PLATFORM_SOUNDS, 
+          nfcTag => {
+            //appelle de la fonction pour faire la requête ajax et afficher les infos de l'utilisateur
+            document.getElementById("card_uid").value = nfc.bytesToHexString(nfcTag.id);
+            document.getElementById("card_uid_div").classList.add("is-dirty");
+          },
+          error => console.log('NFC reader mode failed', error)
+        );
+      }
       break;
     default:
       console.log("erreur");
@@ -124,17 +144,21 @@ function CloseWindow(event){
       card.classList.remove("animation_form_close");
     }, 999);
     //reset du formulaire
-    document.getElementById("card_uid").value = "";
-    document.getElementById("user_name").value = "";
-    document.getElementById("user_firstname").value = "";
-    document.getElementById("user_nbconsos").value = "";
-    document.getElementById("card_uid_div").classList.remove("is-dirty");
-    document.getElementById("user_name_div").classList.remove("is-dirty");
-    document.getElementById("user_firstname_div").classList.remove("is-dirty");
-    document.getElementById("user_nbconsos_div").classList.remove("is-dirty");
+    updateForm(["card_uid", "user_name", "user_firstname", "user_nbconsos"]);
+    
   }
 }
-
+function updateForm(ids){
+  //reset des valeurs
+  div_ids=[];
+  for (let i = 0; i < ids.length; i++){
+    document.getElementById(ids[i]).value = "";
+    div_ids.push(ids[i]+"_div");
+  }
+  for (let i = 0; i < div_ids.length; i++){
+    document.getElementById(div_ids[i]).classList.remove("is-dirty", "is-invalid", "is-upgraded");
+  }
+}
 function startScan(){
   console.log("startScan");
 cordova.plugins.barcodeScanner.scan(
@@ -234,6 +258,37 @@ function Add_User(event){
       CloseWindow(event);
     });
 
+}
+function view_User(uid){
+  //appelle de la fonction pour afficher les infos de l'utilisateur
+  API_infos_User(uid)
+    .then(response => {
+      if (!response.ok) {
+        Display_Error("Erreur Réseau" ,"view_User",response.status);
+      }
+      return response.json();
+    })
+    .then(data => {
+      console.log(JSON.stringify(data));
+      if (data.message == "User found") {
+        // Affichage de la confettis
+        confetti({
+          particleCount: 100,
+          spread: 70,
+          origin: { y: 0.8 }
+        });
+      } else {
+        Display_Error("Erreur :" + data.message, "view_User", data.message);
+      }
+    })
+    .catch(error => {
+        Display_Error("Erreur :" + error, "view_User", error);
+    });
+
+}
+function API_infos_User(uid){
+  let url = "https://api.sae302.remcorp.fr/sae302-api/getUser.php?id="+uid;
+  return fetch(url)    
 }
 function API_add_User(uid, nom, prenom, nbconsos){
   let url = "https://api.sae302.remcorp.fr/sae302-api/createUser.php?id="+uid+"&nom="+nom+"&prenom="+prenom+"&nbconso="+nbconsos;
