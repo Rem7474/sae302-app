@@ -100,12 +100,12 @@
     flex-direction: column;
     padding-left: 5px;
 }
-#strong{
+.strong{
     font-weight: bold;
     text-transform: none;
     line-height: 1;
 }
-#light{
+.light{
     font-weight: lighter;
     text-transform: none;
     font-size: 8.5px;
@@ -116,23 +116,26 @@
 p{
     margin: 0;
     line-height: 1;
+    font-size: 0.9em;
 }
 #card_bottom_left_date{
     margin-top: 4%;
     margin-bottom: 2%;
 }
-#barcode{
+#barcode_img{
     padding-right: 10px;
     padding-bottom: 10px;
 }
-#barcode img{
+#barcode_img img{
     height: 60%;
     width: 95%;
+    max-height: 55px;
 }
 #text_vertical p{
     writing-mode: sideways-lr;
-    font-size: 7px;
+    font-size: 6px;
     width: 100%;
+    display: none;
 }
 #text_vertical{
     width: 5px;

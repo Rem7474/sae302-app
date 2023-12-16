@@ -13,7 +13,9 @@
         <script src="./mdl/material.min.js"></script>
         <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
         <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/jsbarcode/3.6.0/JsBarcode.all.min.js"></script>
         <script src="cordova.js"></script>
+        <link rel="stylesheet" href="css/card.css">
         <title>Panier</title>
     </head>
     <body id="body">
@@ -63,7 +65,7 @@
             </div>
 
             <div id="card_view_users" class="hidden card_menu">
-                <div class="mdl-card">
+                <!--                <div class="mdl-card">
                     <i class="bi bi-x cancel" id="cancel_view_users"></i>
                     <div class="mdl-card__title">
                         <h2 class="mdl-card__title-text">Informations utilisateur</h2>
@@ -88,7 +90,55 @@
                                 <span class="mdl-textfield__error">Ce n'est pas un nombre !</span>
                             </div>
                         </form>
-                        
+                    </div>
+                </div>-->
+                <i class="bi bi-x cancel" id="cancel_view_users"></i>
+                <div id="card">
+                    <div id="card_top">
+                        <div id="card_top_left">
+                            <div id="card_qrcode">
+                                <img src="img/qr_code.png" alt="logo">
+                            </div>
+                            <div id="card_izly">
+                                <img src="img/izly.png" alt="logo">
+                            </div>
+                            <div id="card_crous">
+                                <img src="img/crous.jpg" alt="logo">
+                            </div>
+                        </div>
+                        <div id="card_top_right">
+                            <div id="card_top_right_img">
+                                <img src="img/student.jpg" alt="logo">
+                            </div>
+                        </div>
+                    </div>
+                    <div id="card_bottom">
+                        <div id="card_bottom_left">
+                            <div id="card_bottom_left_picture">
+                                <img src="img/profil.jpg" id="view_user_photo" alt="logo">
+                            </div>
+                        </div>
+                        <div id="card_bottom_right">
+                            <div id="card_bottom_left_title">
+                                <h2>carte étudiante</h2>
+                            </div>
+                            <div id="card_bottom_left_id">
+                                <p id="text_name"><span class="strong"><span id="view_user_firstname">Remy</span><br><span id="view_user_name">CUVELIER</span></span><br><span class="light" id="view_user_name2">CUVELIER</span></p>
+                            </div>
+                            <div id="card_bottom_left_date">
+                                <p>
+                                    <span class="strong">Date de naissance :</span> 01/01/2000<br>
+                                    <span class="strong">Nb consos :</span> <span id="view_user_nbconsos">52202023</span><br>
+                                    <span class="strong">UID :</span> <span id="view_card_uid">999618078 FR</span><br>
+                                </p>
+                            </div>
+                            <div id="barcode_img">
+                                <img src="img/barcode.png" id="barcode-container" alt="logo">
+                            </div>
+                            <div id="text_vertical">
+                                <p>université savoie mont blanc</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -114,9 +164,9 @@
                                 <label class="mdl-textfield__label" for="product_order_price" id="product_order_price_label">Prix achat</label>
                                 <span class="mdl-textfield__error">Ce n'est pas un nombre !</span>
                             </div>
-                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" id="product_order_sale_div">
-                                <input class="mdl-textfield__input" type="text" pattern="-?[0-9]*(\.[0-9]+)?" id="product_order_sale" required>
-                                <label class="mdl-textfield__label" for="product_order_sale" id="product_order_sale_label">Prix vente</label>
+                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" id="product_sell_price_div">
+                                <input class="mdl-textfield__input" type="text" pattern="-?[0-9]*(\.[0-9]+)?" id="product_sell_price" required>
+                                <label class="mdl-textfield__label" for="product_sell_price" id="product_sell_price_label">Prix vente</label>
                                 <span class="mdl-textfield__error">Ce n'est pas un nombre !</span>
                             </div>
                             <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" id="product_stock_div">

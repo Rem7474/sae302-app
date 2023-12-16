@@ -2,7 +2,7 @@
 //DATE : 11/12/2023
 //VERSION : 1.0
 //DESCRIPTION : Fichier javascript pour l'application mobile
-//PLUGINS : community-cordova-plugin-nfc, cordova-plugin-codescanner
+//PLUGINS : community-cordova-plugin-nfc, cordova-plugin-codescanner, cordova-plugin-camera
 
 //VARIABLE TEST
 //METTRE A FALSE POUR TESTER AVEC LES PLUGINS
@@ -57,7 +57,7 @@ function onDeviceReady() {
 }
 
 
-/*TEST ANIMATION*/
+//animation ouverture des fenetres
 function addAnimation(event){
   let button = event.currentTarget;
 
@@ -68,14 +68,12 @@ function addAnimation(event){
   }, 500);
 
   let target = event.currentTarget.id;
-  let card;
-  let close;
   switch(target){
     case "add_user":
       OpenWindow(target);
       //event pour valider le formulaire :
       document.getElementById("formulaire_add_user").addEventListener("submit", Add_User, false);
-      updateForm(["card_uid", "user_name", "user_firstname", "user_nbconsos"]);
+      updateForm("value",["","","",""],["card_uid", "user_name", "user_firstname", "user_nbconsos"]);
       if (!test){
         nfc.readerMode(
           nfc.FLAG_READER_NFC_A | nfc.FLAG_READER_NO_PLATFORM_SOUNDS, 
@@ -96,22 +94,27 @@ function addAnimation(event){
       //ouverture du scan de code barre
       if (!test){
         ScanUpdateProduct();
-
       }
-
       break;
     case "view_products":
       console.log("historique");
       break;
     case "view_users":
+      JsBarcode("#barcode-container", "12345678", {
+        format: "CODE39",
+        displayValue: false,
+      });
+      updateForm("innerText",["uid carte rfid","NOM","NOM","Prénom","nombre consos"],["view_card_uid", "view_user_name","view_user_name2", "view_user_firstname", "view_user_nbconsos"]);
+      updateForm("src",["img/profil.jpg"],["view_user_photo"]);
       OpenWindow(target);
       if (!test){
         nfc.readerMode(
           nfc.FLAG_READER_NFC_A | nfc.FLAG_READER_NO_PLATFORM_SOUNDS, 
           nfcTag => {
             //appelle de la fonction pour faire la requête ajax et afficher les infos de l'utilisateur
-            document.getElementById("view_card_uid").value = nfc.bytesToHexString(nfcTag.id);
-            document.getElementById("view_card_uid_div").classList.add("is-dirty");
+            document.getElementById("view_card_uid").innerText = nfc.bytesToHexString(nfcTag.id);
+            console.log(nfcTag.id);
+            //document.getElementById("view_card_uid_div").classList.add("is-dirty");
             view_User(nfc.bytesToHexString(nfcTag.id));
           },
           error => console.log('NFC reader mode failed', error)
@@ -146,12 +149,18 @@ function CloseWindow(event){
   if(event.target.id == "card_add_user" || event.target.id == "cancel_add_user" || event.target.id =="formulaire_add_user"){ //a modifier pour fermeture quand envoie
     CloseAnimation("card_add_user");
     //reset du formulaire
-    updateForm(["card_uid", "user_name", "user_firstname", "user_nbconsos"]);
+    updateForm("value",["","","",""],["card_uid", "user_name", "user_firstname", "user_nbconsos"]);
   }
   if(event.target.id == "card_view_users" || event.target.id == "cancel_view_users"){
     CloseAnimation("card_view_users");
     //reset du formulaire
-    updateForm(["view_card_uid", "view_user_name", "view_user_firstname", "view_user_nbconsos"]);
+    updateForm("innerText",["uid carte rfid","NOM","NOM","Prénom","nombre consos"],["view_card_uid", "view_user_name","view_user_name2", "view_user_firstname", "view_user_nbconsos"]);
+    updateForm("src",["img/profil.jpg"],["view_user_photo"]);
+    document.getElementById("view_user_photo").removeEventListener("click", PhotoCarte, false);
+    JsBarcode("#barcode-container", "12345678", {
+      format: "CODE39",
+      displayValue: false,
+    });
   }
 }
 function CloseAnimation(id){
@@ -163,16 +172,19 @@ function CloseAnimation(id){
     card.classList.remove("animation_form_close");
   }, 475);
 }
-function updateForm(ids){
+function updateForm(type,contenu,ids){
   //reset des valeurs
   div_ids=[];
   for (let i = 0; i < ids.length; i++){
-    document.getElementById(ids[i]).value = "";
+    document.getElementById(ids[i])[type] = contenu[i];
     div_ids.push(ids[i]+"_div");
   }
-  for (let i = 0; i < div_ids.length; i++){
-    document.getElementById(div_ids[i]).classList.remove("is-dirty", "is-invalid", "is-upgraded");
+  if (type == "value"){
+    for (let i = 0; i < div_ids.length; i++){
+      document.getElementById(div_ids[i]).classList.remove("is-dirty", "is-invalid", "is-upgraded");
+    }
   }
+  
 }
 function startScan(){
   console.log("startScan");
@@ -286,12 +298,24 @@ function view_User(uid){
     .then(data => {
       console.log(JSON.stringify(data));
       if (data.message == "User found") {
-        document.getElementById("view_user_name").value = data.utilisateur_nom;
-        document.getElementById("view_user_name_div").classList.add("is-dirty");
-        document.getElementById("view_user_firstname").value = data.utilisateur_prenom;
-        document.getElementById("view_user_firstname_div").classList.add("is-dirty");
-        document.getElementById("view_user_nbconsos").value = data.utilisateur_conso;
-        document.getElementById("view_user_nbconsos_div").classList.add("is-dirty");
+        //event pour modifier la photo de la carte
+        document.getElementById("view_user_photo").addEventListener("click", PhotoCarte, false);
+        JsBarcode("#barcode-container", data.utilisateur_rfid_uid, {
+          format: "CODE39",
+          displayValue: false,
+        });
+        document.getElementById("view_user_name").innerText = data.utilisateur_nom;
+        document.getElementById("view_user_name2").innerText = data.utilisateur_nom;
+        //document.getElementById("view_user_name_div").classList.add("is-dirty");
+        document.getElementById("view_user_firstname").innerText = data.utilisateur_prenom;
+        //document.getElementById("view_user_firstname_div").classList.add("is-dirty");
+        document.getElementById("view_user_nbconsos").innerText = data.utilisateur_conso;
+        //document.getElementById("view_user_nbconsos_div").classList.add("is-dirty");
+        
+        //test si photo dans le local storage
+        if (localStorage.getItem(data.utilisateur_rfid_uid.toUpperCase()) !== null) {
+          document.getElementById("view_user_photo").src = localStorage.getItem(data.utilisateur_rfid_uid.toUpperCase());
+        }
       }
       else{
         Display_Error("Erreur :" + data.message, "view_User", data.message);
@@ -338,6 +362,10 @@ function API_infos_Article(barcode){
   let url = "https://api.sae302.remcorp.fr/sae302-api/getProduct.php?barcode="+barcode;
   return fetch(url)
 }
+function API_stock_Product(barcode){
+  let url = "https://api.sae302.remcorp.fr/sae302-api/getStock.php?barcode="+barcode;
+  return fetch(url)
+}
 function Display_Error(message, fonction, details){
   alert(message);
   console.log(details);
@@ -347,6 +375,10 @@ function ScanUpdateProduct(){
   //ouverture du scan de code barre puis appel de la fonction pour récupérer les infos du produit
   cordova.plugins.barcodeScanner.scan(
     function (result) {
+      //appelle de la fonction pour récupérer les infos du produit
+      console.log("résultat du scan : "+result.text)
+      document.getElementById("barcode").value = result.text;
+      document.getElementById("barcode_div").classList.add("is-dirty");
       API_infos_Article(result.text)
         .then(response => {
         if (!response.ok) {
@@ -357,8 +389,37 @@ function ScanUpdateProduct(){
         .then(data => {
           if (data.message == "Product found") {
             //affiche les infos dans le formulaire
-            
+            document.getElementById("product_name").value = data.produit_nom;
+            document.getElementById("product_name_div").classList.add("is-dirty");
+            document.getElementById("product_name_div").classList.remove("is-invalid");
+            document.getElementById("product_order_price").value = data.produit_prix_achat;
+            document.getElementById("product_order_price_div").classList.add("is-dirty");
+            document.getElementById("product_order_price_div").classList.remove("is-invalid");
+            document.getElementById("product_sell_price").value = data.produit_prix_vente;
+            document.getElementById("product_sell_price_div").classList.add("is-dirty");
+            document.getElementById("product_sell_price_div").classList.remove("is-invalid");
 
+            //récupérer stock
+            API_stock_Product(data.produit_barcode)
+              .then (response => {
+                if (!response.ok) {
+                  Display_Error("Erreur Réseau" ,"ScanUpdateProduct",response.status);
+                }
+                return response.json();
+              })
+              .then(data => {
+                if (data.message == "Stock found") {
+                  document.getElementById("product_stock").value = data.stock_quantite;
+                  document.getElementById("product_stock_div").classList.add("is-dirty");
+                  document.getElementById("product_stock_div").classList.remove("is-invalid");
+                }
+                else{
+                  //laisse l'utilisateur remplir le formulaire en sachant qu'il faudra créer le produit
+                }
+              })
+              .catch(error => {
+                  //ERROR réseau
+              });
           }
           else{
             //laisse l'utilisateur remplir le formulaire en sachant qu'il faudra créer le produit
@@ -385,4 +446,27 @@ function ScanUpdateProduct(){
         disableSuccessBeep: true // iOS and Android
     }
   );
+}
+
+function PhotoCarte(){
+  navigator.camera.getPicture(onPhotoSuccess, onPhotoFail, {
+    quality: 50,
+    destinationType: Camera.DestinationType.DATA_URL,
+    encodingType: Camera.EncodingType.JPEG,
+    targetWidth: 500,
+    targetHeight: 500,
+  });
+}
+function onPhotoSuccess(imageData) {
+  // imageData contient les données de l'image (base64)
+  // Enregistrez imageData dans les données de votre application (par exemple, localStorage)
+  let uid=document.getElementById("view_card_uid").innerText;
+  console.log("dans le innerText : "+uid);
+  localStorage.setItem(uid, "data:image/jpeg;base64," + imageData);
+  document.getElementById("view_user_photo").src = localStorage.getItem(uid);
+  
+}
+
+function onPhotoFail(message) {
+  console.log("Échec de la capture de la photo: " + message);
 }

@@ -268,3 +268,11 @@ h1 {
     font-size: 2em;
     cursor: pointer;
 }
+#card_view_users{
+    display: flex;
+    flex-direction: column;
+}
+#card_view_users .cancel{
+    align-self: flex-end;
+    width: 15%;
+}
