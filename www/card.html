@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://cdn.jsdelivr.net data: https://ssl.gstatic.com https://fonts.gstatic.com 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; media-src *; img-src 'self' data: content: remcorp.fr *.remcorp.fr; connect-src 'self' *.remcorp.fr;">
+        <meta name="format-detection" content="telephone=no">
+        <meta name="msapplication-tap-highlight" content="no">
+        <meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
+        <meta name="color-scheme" content="light dark">
+        <link rel="stylesheet" href="css/index.css">
+        <link rel="stylesheet" href="css/card.css">
+        <link rel="stylesheet" href="css/mdl.css">
+        <link rel="stylesheet" href="css/material-icons.css">
+        <link rel="stylesheet" href="css/material.min.css">
+        <script src="js/material.min.js"></script>
+        <link rel="stylesheet" href="css/material-icons.css">
+        <script src="cordova.js"></script>
+        <title>Panier</title>
+    </head>
+    <body id="body">
+        <div id="app">
+            <!--Imitation de la carte étudiante-->
+            <div id="card">
+                <div id="card_top">
+                    <div id="card_top_left">
+                        <div id="card_qrcode">
+                            <img src="img/qr_code.png" alt="logo">
+                        </div>
+                        <div id="card_izly">
+                            <img src="img/izly.png" alt="logo">
+                        </div>
+                        <div id="card_crous">
+                            <img src="img/crous.jpg" alt="logo">
+                        </div>
+                    </div>
+                    <div id="card_top_right">
+                        <div id="card_top_right_img">
+                            <img src="img/student.jpg" alt="logo">
+                        </div>
+                    </div>
+                </div>
+                <div id="card_bottom">
+                    <div id="card_bottom_left">
+                        <div id="card_bottom_left_picture">
+                            <img src="img/profil.jpg" alt="logo">
+                        </div>
+                    </div>
+                    <div id="card_bottom_right">
+                        <div id="card_bottom_left_title">
+                            <h2>carte étudiante</h2>
+                        </div>
+                        <div id="card_bottom_left_id">
+                            <p id="text_name"><span id="strong">Remy<br>CUVELIER</span><br><span id="light">CUVELIER</span></p>
+                        </div>
+                        <div id="card_bottom_left_date">
+                            <p>
+                                <span id="strong">Date de naissance :</span> 01/01/2000<br>
+                                <span id="strong">N° étudiant :</span> 52202023<br>
+                                <span id="strong">PIC :</span> 999618078 FR<br>
+                            </p>
+                        </div>
+                        <div id="barcode">
+                            <img src="img/barcode.png" alt="logo">
+                        </div>
+                        <div id="text_vertical">
+                            <p>université savoie mont blanc</p>
+                        </div>
+                    </div>
+                    
+            </div>
+            <script src="js/index.js"></script>
+        </div>
+    </body>
