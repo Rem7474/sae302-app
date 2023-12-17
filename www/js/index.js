@@ -238,13 +238,13 @@ function Add_User(event){
   //appele de l'API
   API_add_User(uid, nom, prenom, nbconsos)
     .then(response => {
+      document.getElementById("Loading").classList.add("hidden");
       if (!response.ok) {
         Display_Error("Erreur Réseau" ,"API_add_User",response.status);
       }
       return response.json();
     })
     .then(status => {
-      document.getElementById("Loading").classList.add("hidden");
       if (status == "User added") {
         // Affichage de la confettis
         confetti({
@@ -313,9 +313,11 @@ function Update_Product(event){
   switch(infos){
     case "produit":
       //créer le produit et le stock
+      document.getElementById("Loading").classList.remove("hidden");
       API_Add_Product(data[0][0], data[0][1], data[0][2], data[0][3])
         .then(response => {
           if (!response.ok) {
+            document.getElementById("Loading").classList.add("hidden");
             Display_Error("Erreur Réseau" ,"Update_Product",response.status);
           }
           return response.json();
@@ -325,13 +327,14 @@ function Update_Product(event){
             //créer le stock
             API_Add_Stock(data[0][0], data[0][4])
               .then(response => {
+                document.getElementById("Loading").classList.add("hidden");
                 if (!response.ok) {
                   Display_Error("Erreur Réseau" ,"Update_Product",response.status);
                 }
                 return response.json();
               })
               .then(status => {
-                if (status == "Stock added") {
+                if (status.message == "Stock added") {
                   // Affichage de la confettis
                   confetti({
                     particleCount: 100,
@@ -347,6 +350,7 @@ function Update_Product(event){
               }
             );
           } else {
+            document.getElementById("Loading").classList.add("hidden");
             Display_Error("Erreur :" + status, "Update_Product", status);
           }
         })
@@ -357,20 +361,23 @@ function Update_Product(event){
       break;
     case "stock":
       //créer le stock et mettre a jour le produit si besoin
+      document.getElementById("Loading").classList.remove("hidden");
       API_Add_Stock(data[0][0], data[0][4])
         .then(response => {
           if (!response.ok) {
             Display_Error("Erreur Réseau" ,"Update_Product",response.status);
+            document.getElementById("Loading").classList.add("hidden");
           }
           return response.json();
         })
         .then(status => {
-          if (status == "Stock added") {
+          if (status.message == "Stock added") {
             //test si le produit a été modifié
             modified = checkChange(data);
             if (modified){
               API_Update_Product(data[0][0], data[0][1], data[0][2], data[0][3])
               .then(response => {
+                document.getElementById("Loading").classList.add("hidden");
                 if (!response.ok) {
                   Display_Error("Erreur Réseau" ,"Update_Product",response.status);
                 }
@@ -391,6 +398,7 @@ function Update_Product(event){
               })
             }
           } else {
+            document.getElementById("Loading").classList.add("hidden");
             Display_Error("Erreur :" + status, "Update_Product", status);
           }
         })
@@ -400,12 +408,13 @@ function Update_Product(event){
       );
       break;
     case "all":
-      let confettis = false;
       //vérifier les modifications du produit
       modified = checkChange(data);
       if (modified){
+        document.getElementById("Loading").classList.remove("hidden");
         API_Update_Product(data[0][0], data[0][1], data[0][2], data[0][3])
         .then(response => {
+          document.getElementById("Loading").classList.add("hidden");
           if (!response.ok) {
             Display_Error("Erreur Réseau" ,"Update_Product",response.status);
           }
@@ -413,9 +422,13 @@ function Update_Product(event){
         }
         )
         .then(status => {
-          if (status == "Product updated") {
+          if (status.message == "Product updated") {
             // Définition d'une variable pour savoir si une modification a été faite pour afficher la confettis
-            confettis = true;
+            confetti({
+              particleCount: 100,
+              spread: 70,
+              origin: { y: 0.8 }
+            });
           } else {
             Display_Error("Erreur :" + status, "Update_Product", status);
           }
@@ -428,18 +441,23 @@ function Update_Product(event){
       //vérifier les modifications du stock
       if (data[0][4] != data[1][4]){
         modified = true;
-        console.log("modification : "+data[0][4]+" != "+data[1][4]);
+        document.getElementById("Loading").classList.remove("hidden");
         API_Update_Stock(data[0][0], data[0][4])
           .then(response => {
+            document.getElementById("Loading").classList.add("hidden");
             if (!response.ok) {
               Display_Error("Erreur Réseau" ,"Update_Product",response.status);
             }
             return response.json();
           })
           .then(status => {
-            if (status == "Stock updated") {
+            if (status.message == "Stock updated") {
               // Définition d'une variable pour savoir si une modification a été faite pour afficher la confettis
-              confettis = true;
+              confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.8 }
+              });
             } else {
               Display_Error("Erreur :" + status, "Update_Product", status);
             }
@@ -448,14 +466,6 @@ function Update_Product(event){
             Display_Error("Erreur Réseau", "Update_Product", error.message);
           }
         );
-      }
-      // Affichage de la confettis
-      if (confettis){
-        confetti({
-          particleCount: 100,
-          spread: 70,
-          origin: { y: 0.8 }
-        });
       }
       break;
     default:
@@ -470,7 +480,6 @@ function checkChange(data){
   while (modified == false && i < data[0].length-1){
     if (data[0][i] != data[1][i]){
       modified = true;
-      console.log("modification : "+data[0][i]+" != "+data[1][i]);
     }
     i++;
   }
