@@ -96,6 +96,7 @@ function addAnimation(event){
       OpenWindow(target);
       //event pour valider le formulaire :
       document.getElementById("formulaire_update_product").addEventListener("submit", Update_Product, false);
+      updateForm("value",["","","","",""],["barcode", "product_name", "product_order_price", "product_sell_price", "product_stock"]);
       //ouverture du scan de code barre
       if (!test){
         ScanUpdateProduct();
