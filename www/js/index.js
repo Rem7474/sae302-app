@@ -366,9 +366,9 @@ function Update_Product(event){
       document.getElementById("Loading").classList.remove("hidden");
       API_Add_Stock(data[0][0], data[0][4])
         .then(response => {
+          document.getElementById("Loading").classList.add("hidden");
           if (!response.ok) {
             Display_Error("Erreur Réseau" ,"Update_Product",response.status);
-            document.getElementById("Loading").classList.add("hidden");
           }
           return response.json();
         })
@@ -399,6 +399,11 @@ function Update_Product(event){
                 }
               })
             }
+            confetti({
+              particleCount: 100,
+              spread: 70,
+              origin: { y: 0.8 }
+            });
           } else {
             document.getElementById("Loading").classList.add("hidden");
             Display_Error("Erreur :" + status, "Update_Product", status);
