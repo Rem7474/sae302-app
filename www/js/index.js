@@ -78,6 +78,10 @@ function addAnimation(event){
         nfc.readerMode(
           nfc.FLAG_READER_NFC_A | nfc.FLAG_READER_NO_PLATFORM_SOUNDS, 
           nfcTag => {
+            nfc.disableReaderMode(
+              () => console.log('NFC reader mode disabled'),
+              error => console.log('Error disabling NFC reader mode', error)
+            );
             document.getElementById("card_uid").value = nfc.bytesToHexString(nfcTag.id);
             document.getElementById("card_uid_div").classList.add("is-dirty");
           },
@@ -112,6 +116,10 @@ function addAnimation(event){
           nfc.FLAG_READER_NFC_A | nfc.FLAG_READER_NO_PLATFORM_SOUNDS, 
           nfcTag => {
             //appelle de la fonction pour faire la requête ajax et afficher les infos de l'utilisateur
+            nfc.disableReaderMode(
+              () => console.log('NFC reader mode disabled'),
+              error => console.log('Error disabling NFC reader mode', error)
+            );
             document.getElementById("view_card_uid").innerText = nfc.bytesToHexString(nfcTag.id);
             console.log(nfcTag.id);
             //document.getElementById("view_card_uid_div").classList.add("is-dirty");
@@ -150,6 +158,7 @@ function CloseWindow(event){
     CloseAnimation("card_add_user");
     //reset du formulaire
     updateForm("value",["","","",""],["card_uid", "user_name", "user_firstname", "user_nbconsos"]);
+    document.getElementById("formulaire_add_user").removeEventListener("submit", Add_User, false);
   }
   if(event.target.id == "card_view_users" || event.target.id == "cancel_view_users"){
     CloseAnimation("card_view_users");
@@ -161,6 +170,13 @@ function CloseWindow(event){
       format: "CODE39",
       displayValue: false,
     });
+  }
+  if(event.target.id == "card_update_product" || event.target.id == "cancel_update_product" || event.target.id =="formulaire_update_product"){ //a modifier pour fermeture quand envoie
+    CloseAnimation("card_update_product");
+    //reset du formulaire
+    updateForm("value",["","","","",""],["barcode", "product_name", "product_order_price", "product_sell_price", "product_stock"]);
+    document.getElementById("barcode").removeAttribute("data-api");
+    document.getElementById("formulaire_update_product").removeEventListener("submit", Update_Product, false);
   }
 }
 function CloseAnimation(id){
@@ -211,52 +227,6 @@ function startScan(){
   }
 );
 }
-function Ajout_panier(code_barre){
-  //ajout au panier
-  //affichage des boutons de suppression et de validation
-  //affichage du prix total
-  //ETAPE 1 : on test si le produit est déjà dans le panier
-  //ETAPE 2 : on récupère le prix et le nom du produit avec une requête ajax
-  //ETAPE 3 : on affiche le prix total
-  //ETAPE 4 : on affiche les boutons de suppression et de validation
-  //ETAPE 5 : on affiche le panier
-  //ETAPE 6 : on affiche le prix total
-
-  //ETAPE 1
-  let deja_present = false;
-
-
-  //ETAPE 2
-  let prix = 0;
-  let nom = "";
-  let quantite = 1;
-  API_infos_Article(code_barre)
-    .then(data => {
-      let infos = JSON.parse(data);
-      console.log(JSON.stringify(infos));
-      console.log("bouh");
-      //TOUT METTRE ICI car ASYNCHRONE
-    })
-    .catch(error => {
-        //ERROR réseau
-    });
-}
-function API_infos_Article(barcode){
-let url = "https://api.sae302.remcorp.fr/sae302-api/getProduct.php?barcode="+barcode;
-return fetch(url)
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        return response.json();
-    })
-    .then(data => {
-        return JSON.stringify(data);
-    })
-    .catch(error => {
-        throw error;
-    });
-}
 function Add_User(event){
   event.preventDefault();
   //récupération des données du formulaire
@@ -264,9 +234,17 @@ function Add_User(event){
   let nom = document.getElementById("user_name").value;
   let prenom = document.getElementById("user_firstname").value;
   let nbconsos = document.getElementById("user_nbconsos").value;
+  document.getElementById("Loading").classList.remove("hidden");
   //appele de l'API
   API_add_User(uid, nom, prenom, nbconsos)
+    .then(response => {
+      if (!response.ok) {
+        Display_Error("Erreur Réseau" ,"API_add_User",response.status);
+      }
+      return response.json();
+    })
     .then(status => {
+      document.getElementById("Loading").classList.add("hidden");
       if (status == "User added") {
         // Affichage de la confettis
         confetti({
@@ -288,8 +266,11 @@ function Add_User(event){
 }
 function view_User(uid){
   //appelle de la fonction pour afficher les infos de l'utilisateur
-  API_infos_User(uid)
+  //désactive le scan NFC
+  document.getElementById("Loading").classList.remove("hidden");
+  API_Get_User(uid)
     .then(response => {
+      document.getElementById("Loading").classList.add("hidden");
       if (!response.ok) {
         Display_Error("Erreur Réseau" ,"view_User",response.status);
       }
@@ -306,12 +287,8 @@ function view_User(uid){
         });
         document.getElementById("view_user_name").innerText = data.utilisateur_nom;
         document.getElementById("view_user_name2").innerText = data.utilisateur_nom;
-        //document.getElementById("view_user_name_div").classList.add("is-dirty");
         document.getElementById("view_user_firstname").innerText = data.utilisateur_prenom;
-        //document.getElementById("view_user_firstname_div").classList.add("is-dirty");
         document.getElementById("view_user_nbconsos").innerText = data.utilisateur_conso;
-        //document.getElementById("view_user_nbconsos_div").classList.add("is-dirty");
-        
         //test si photo dans le local storage
         if (localStorage.getItem(data.utilisateur_rfid_uid.toUpperCase()) !== null) {
           document.getElementById("view_user_photo").src = localStorage.getItem(data.utilisateur_rfid_uid.toUpperCase());
@@ -328,44 +305,178 @@ function view_User(uid){
 }
 function Update_Product(event){
   event.preventDefault();
-  //ETAPE 1 : scan du code barre
-  //ETAPE 2 : récupération des infos du produit avec une requête ajax pour savoir si il existe
-  //ETAPE 3 : si il existe on affiche les infos dans le formulaire
-  //ETAPE 4 : si il n'existe pas on le crée
-  //ETAPE 5 : on update son stock avec une requête ajax
-  //ETAPE 6 : on affiche le message de confirmation
-  
-  
+  //récupérer les infos sur les modifications
+  let infos = document.getElementById("barcode").getAttribute("data-api");
+  let data = dataFormulaire("get",["barcode","product_name","product_order_price","product_sell_price","product_stock"]);
+  let modified = false;
+  console.log("ici c'est paris : "+infos);
+  switch(infos){
+    case "produit":
+      //créer le produit et le stock
+      API_Add_Product(data[0][0], data[0][1], data[0][2], data[0][3])
+        .then(response => {
+          if (!response.ok) {
+            Display_Error("Erreur Réseau" ,"Update_Product",response.status);
+          }
+          return response.json();
+        })
+        .then(status => {
+          if (status == "Product added") {
+            //créer le stock
+            API_Add_Stock(data[0][0], data[0][4])
+              .then(response => {
+                if (!response.ok) {
+                  Display_Error("Erreur Réseau" ,"Update_Product",response.status);
+                }
+                return response.json();
+              })
+              .then(status => {
+                if (status == "Stock added") {
+                  // Affichage de la confettis
+                  confetti({
+                    particleCount: 100,
+                    spread: 70,
+                    origin: { y: 0.8 }
+                  });
+                } else {
+                  Display_Error("Erreur :" + status, "Update_Product", status);
+                }
+              })
+              .catch(error => {
+                Display_Error("Erreur Réseau", "Update_Product", error.message);
+              }
+            );
+          } else {
+            Display_Error("Erreur :" + status, "Update_Product", status);
+          }
+        })
+        .catch(error => {
+          Display_Error("Erreur Réseau", "Update_Product", error.message);
+        }
+      );
+      break;
+    case "stock":
+      //créer le stock et mettre a jour le produit si besoin
+      API_Add_Stock(data[0][0], data[0][4])
+        .then(response => {
+          if (!response.ok) {
+            Display_Error("Erreur Réseau" ,"Update_Product",response.status);
+          }
+          return response.json();
+        })
+        .then(status => {
+          if (status == "Stock added") {
+            //test si le produit a été modifié
+            modified = checkChange(data);
+            if (modified){
+              API_Update_Product(data[0][0], data[0][1], data[0][2], data[0][3])
+              .then(response => {
+                if (!response.ok) {
+                  Display_Error("Erreur Réseau" ,"Update_Product",response.status);
+                }
+                return response.json();
+              }
+              )
+              .then(status => {
+                if (status == "Product updated") {
+                  // Affichage de la confettis
+                  confetti({
+                    particleCount: 100,
+                    spread: 70,
+                    origin: { y: 0.8 }
+                  });
+                } else {
+                  Display_Error("Erreur :" + status, "Update_Product", status);
+                }
+              })
+            }
+          } else {
+            Display_Error("Erreur :" + status, "Update_Product", status);
+          }
+        })
+        .catch(error => {
+          Display_Error("Erreur Réseau", "Update_Product", error.message);
+        }
+      );
+      break;
+    case "all":
+      let confettis = false;
+      //vérifier les modifications du produit
+      modified = checkChange(data);
+      if (modified){
+        API_Update_Product(data[0][0], data[0][1], data[0][2], data[0][3])
+        .then(response => {
+          if (!response.ok) {
+            Display_Error("Erreur Réseau" ,"Update_Product",response.status);
+          }
+          return response.json();
+        }
+        )
+        .then(status => {
+          if (status == "Product updated") {
+            // Définition d'une variable pour savoir si une modification a été faite pour afficher la confettis
+            confettis = true;
+          } else {
+            Display_Error("Erreur :" + status, "Update_Product", status);
+          }
+        })
+        .catch(error => {
+          Display_Error("Erreur Réseau", "Update_Product", error.message);
+        }
+      );
+      }
+      //vérifier les modifications du stock
+      if (data[0][4] != data[1][4]){
+        modified = true;
+        console.log("modification : "+data[0][4]+" != "+data[1][4]);
+        API_Update_Stock(data[0][0], data[0][4])
+          .then(response => {
+            if (!response.ok) {
+              Display_Error("Erreur Réseau" ,"Update_Product",response.status);
+            }
+            return response.json();
+          })
+          .then(status => {
+            if (status == "Stock updated") {
+              // Définition d'une variable pour savoir si une modification a été faite pour afficher la confettis
+              confettis = true;
+            } else {
+              Display_Error("Erreur :" + status, "Update_Product", status);
+            }
+          })
+          .catch(error => {
+            Display_Error("Erreur Réseau", "Update_Product", error.message);
+          }
+        );
+      }
+      // Affichage de la confettis
+      if (confettis){
+        confetti({
+          particleCount: 100,
+          spread: 70,
+          origin: { y: 0.8 }
+        });
+      }
+      break;
+    default:
+      //aucune modification
+      break;
+  }
+  CloseWindow(event);
 }
-function API_infos_User(uid){
-  let url = "https://api.sae302.remcorp.fr/sae302-api/getUser.php?id="+uid;
-  return fetch(url)    
-}
-function API_add_User(uid, nom, prenom, nbconsos){
-  let url = "https://api.sae302.remcorp.fr/sae302-api/createUser.php?id="+uid+"&nom="+nom+"&prenom="+prenom+"&nbconso="+nbconsos;
-  return fetch(url)
-  .then(response => {
-    if (!response.ok) {
-      Display_Error("Erreur Réseau" ,"API_add_User",response.status);
+function checkChange(data){
+  let modified = false;
+  let i=1;
+  while (modified == false && i < data[0].length-1){
+    if (data[0][i] != data[1][i]){
+      modified = true;
+      console.log("modification : "+data[0][i]+" != "+data[1][i]);
     }
-    return response.json();
-  })
-  .then(data => {
-    console.log(JSON.stringify(data));
-    return data.message;
-  })
-  .catch(error => {
-      throw error;
-  });
+    i++;
+  }
+  return modified;
 }
-function API_infos_Article(barcode){
-  let url = "https://api.sae302.remcorp.fr/sae302-api/getProduct.php?barcode="+barcode;
-  return fetch(url)
-}
-function API_stock_Product(barcode){
-  let url = "https://api.sae302.remcorp.fr/sae302-api/getStock.php?barcode="+barcode;
-  return fetch(url)
-}
+
 function Display_Error(message, fonction, details){
   alert(message);
   console.log(details);
@@ -379,7 +490,8 @@ function ScanUpdateProduct(){
       console.log("résultat du scan : "+result.text)
       document.getElementById("barcode").value = result.text;
       document.getElementById("barcode_div").classList.add("is-dirty");
-      API_infos_Article(result.text)
+      document.getElementById("Loading").classList.remove("hidden");
+      API_Get_Product(result.text)
         .then(response => {
         if (!response.ok) {
           Display_Error("Erreur Réseau" ,"ScanUpdateProduct",response.status);
@@ -389,19 +501,38 @@ function ScanUpdateProduct(){
         .then(data => {
           if (data.message == "Product found") {
             //affiche les infos dans le formulaire
-            document.getElementById("product_name").value = data.produit_nom;
-            document.getElementById("product_name_div").classList.add("is-dirty");
-            document.getElementById("product_name_div").classList.remove("is-invalid");
-            document.getElementById("product_order_price").value = data.produit_prix_achat;
-            document.getElementById("product_order_price_div").classList.add("is-dirty");
-            document.getElementById("product_order_price_div").classList.remove("is-invalid");
-            document.getElementById("product_sell_price").value = data.produit_prix_vente;
-            document.getElementById("product_sell_price_div").classList.add("is-dirty");
-            document.getElementById("product_sell_price_div").classList.remove("is-invalid");
 
+            dataFormulaire("set",["product_name","product_order_price","product_sell_price"],[data.produit_nom, data.produit_prix_achat, data.produit_prix_vente]);
+            /*
+            let product_name=document.getElementById("product_name");
+            product_name.value = data.produit_nom;
+            product_name.setAttribute("data-original", data.produit_nom);
+
+            let product_name_div=document.getElementById("product_name_div");
+            product_name_div.classList.add("is-dirty");
+            product_name_div.classList.remove("is-invalid");
+
+            let product_order_price=document.getElementById("product_order_price");
+            product_order_price.value = data.produit_prix_achat;
+            product_order_price.setAttribute("data-original", data.produit_prix_achat);
+
+            let product_order_price_div=document.getElementById("product_order_price_div");
+            product_order_price_div.classList.add("is-dirty");
+            product_order_price_div.classList.remove("is-invalid");
+
+            let product_sell_price=document.getElementById("product_sell_price");
+            product_sell_price.value = data.produit_prix_vente;
+            product_sell_price.setAttribute("data-original", data.produit_prix_vente);
+
+            let product_sell_price_div=document.getElementById("product_sell_price_div");
+            product_sell_price_div.classList.add("is-dirty");
+            product_sell_price_div.classList.remove("is-invalid");
+            */
+            //avant l'envoie du formulaire vérifier ce qui a été changé par rapport a data
             //récupérer stock
-            API_stock_Product(data.produit_barcode)
+            API_Get_Stock(data.produit_barcode)
               .then (response => {
+                document.getElementById("Loading").classList.add("hidden");
                 if (!response.ok) {
                   Display_Error("Erreur Réseau" ,"ScanUpdateProduct",response.status);
                 }
@@ -409,12 +540,19 @@ function ScanUpdateProduct(){
               })
               .then(data => {
                 if (data.message == "Stock found") {
-                  document.getElementById("product_stock").value = data.stock_quantite;
-                  document.getElementById("product_stock_div").classList.add("is-dirty");
-                  document.getElementById("product_stock_div").classList.remove("is-invalid");
+                  let product_stock=document.getElementById("product_stock");
+                  product_stock.value = data.stock_quantite;
+                  product_stock.setAttribute("data-original", data.stock_quantite);
+
+                  let product_stock_div=document.getElementById("product_stock_div");
+                  product_stock_div.classList.add("is-dirty");
+                  product_stock_div.classList.remove("is-invalid");
+
+                  document.getElementById("barcode").setAttribute("data-api", "all") //si data-api = all alors il faut vérifier quoi modifier (produit ou stock)
                 }
                 else{
-                  //laisse l'utilisateur remplir le formulaire en sachant qu'il faudra créer le produit
+                  //laisse l'utilisateur remplir le formulaire en sachant qu'il faudra créer le stock
+                  document.getElementById("barcode").setAttribute("data-api", "stock") //si data-api = stock alors il faut créer le stock
                 }
               })
               .catch(error => {
@@ -422,6 +560,7 @@ function ScanUpdateProduct(){
               });
           }
           else{
+            document.getElementById("barcode").setAttribute("data-api", "produit") //si data-api = produit alors il faut créer le produit et le stock
             //laisse l'utilisateur remplir le formulaire en sachant qu'il faudra créer le produit
           }
         })
@@ -469,4 +608,60 @@ function onPhotoSuccess(imageData) {
 
 function onPhotoFail(message) {
   console.log("Échec de la capture de la photo: " + message);
+}
+
+function dataFormulaire(method, ids, data = []){
+  if (method == "set"){
+    for (let i = 0; i < ids.length; i++){
+      let element = document.getElementById(ids[i]);
+      element.value = data[i];
+      element.setAttribute("data-original", data[i]);
+      let parent=element.parentElement;
+      parent.classList.add("is-dirty");
+      parent.classList.remove("is-invalid");
+    }
+  }
+  else if (method == "get"){
+    let original = [];
+    for (let i = 0; i < ids.length; i++){
+      let element = document.getElementById(ids[i]);
+      data.push(element.value);
+      original.push(element.getAttribute("data-original"));
+    }
+    return [data, original];
+  }
+}
+
+//FONCTIONS API
+function API_Get_User(uid){
+  let url = "https://api.sae302.remcorp.fr/sae302-api/getUser.php?id="+uid;
+  return fetch(url)    
+}
+function API_add_User(uid, nom, prenom, nbconsos){
+  let url = "https://api.sae302.remcorp.fr/sae302-api/createUser.php?id="+uid+"&nom="+nom+"&prenom="+prenom+"&nbconso="+nbconsos;
+  return fetch(url)
+}
+function API_Get_Product(barcode){
+  let url = "https://api.sae302.remcorp.fr/sae302-api/getProduct.php?barcode="+barcode;
+  return fetch(url)
+}
+function API_Add_Product(barcode, name, order_price, sell_price){
+  let url = "https://api.sae302.remcorp.fr/sae302-api/createProduct.php?barcode="+barcode+"&nom="+name+"&prixachat="+order_price+"&prixvente="+sell_price;
+  return fetch(url)
+}
+function API_Update_Product(barcode, name, order_price, sell_price){
+  let url = "https://api.sae302.remcorp.fr/sae302-api/updateProduct.php?barcode="+barcode+"&nom="+name+"&prixachat="+order_price+"&prixvente="+sell_price;
+  return fetch(url)
+}
+function API_Get_Stock(barcode){
+  let url = "https://api.sae302.remcorp.fr/sae302-api/getStock.php?barcode="+barcode;
+  return fetch(url)
+}
+function API_Add_Stock(barcode, stock){
+  let url = "https://api.sae302.remcorp.fr/sae302-api/addStock.php?barcode="+barcode+"&stock="+stock;
+  return fetch(url)
+}
+function API_Update_Stock(barcode, stock){
+  let url = "https://api.sae302.remcorp.fr/sae302-api/updateStock.php?barcode="+barcode+"&stock="+stock;
+  return fetch(url)
 }

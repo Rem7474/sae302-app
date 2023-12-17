@@ -78,10 +78,6 @@ body {
     width: 100%;
     text-align: center;
 }
-#barre_navigation ul li:hover{
-    /**/
-
-}
 #barre_navigation ul li i{
     color: #fff;
     text-decoration: none;
@@ -275,4 +271,16 @@ h1 {
 #card_view_users .cancel{
     align-self: flex-end;
     width: 15%;
+}
+#Loading{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100vw;
+    position: absolute;
+    top: 0px;
+    z-index: 9999;
+    -webkit-backdrop-filter: blur(5px);
+    backdrop-filter: blur(5px);
 }
