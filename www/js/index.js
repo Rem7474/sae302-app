@@ -247,7 +247,7 @@ function Add_User(event){
       return response.json();
     })
     .then(status => {
-      if (status == "User added") {
+      if (status.message == "User added") {
         // Affichage de la confettis
         confetti({
           particleCount: 100,
@@ -325,7 +325,7 @@ function Update_Product(event){
           return response.json();
         })
         .then(status => {
-          if (status == "Product added") {
+          if (status.message == "Product added") {
             //créer le stock
             API_Add_Stock(data[0][0], data[0][4])
               .then(response => {
@@ -387,7 +387,7 @@ function Update_Product(event){
               }
               )
               .then(status => {
-                if (status == "Product updated") {
+                if (status.message == "Product updated") {
                   // Affichage de la confettis
                   confetti({
                     particleCount: 100,
