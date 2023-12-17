@@ -1,8 +1,9 @@
 //AUTHOR : Rémy CUVELIER
 //DATE : 11/12/2023
-//VERSION : 1.0
+//VERSION : 1.1
 //DESCRIPTION : Fichier javascript pour l'application mobile
 //PLUGINS : community-cordova-plugin-nfc, cordova-plugin-codescanner, cordova-plugin-camera
+//A RAJOUTER : plugin diagnostic pour vérifier si le NFC et la caméra sont activés
 
 //VARIABLE TEST
 //METTRE A FALSE POUR TESTER AVEC LES PLUGINS
@@ -512,31 +513,6 @@ function ScanUpdateProduct(){
             //affiche les infos dans le formulaire
 
             dataFormulaire("set",["product_name","product_order_price","product_sell_price"],[data.produit_nom, data.produit_prix_achat, data.produit_prix_vente]);
-            /*
-            let product_name=document.getElementById("product_name");
-            product_name.value = data.produit_nom;
-            product_name.setAttribute("data-original", data.produit_nom);
-
-            let product_name_div=document.getElementById("product_name_div");
-            product_name_div.classList.add("is-dirty");
-            product_name_div.classList.remove("is-invalid");
-
-            let product_order_price=document.getElementById("product_order_price");
-            product_order_price.value = data.produit_prix_achat;
-            product_order_price.setAttribute("data-original", data.produit_prix_achat);
-
-            let product_order_price_div=document.getElementById("product_order_price_div");
-            product_order_price_div.classList.add("is-dirty");
-            product_order_price_div.classList.remove("is-invalid");
-
-            let product_sell_price=document.getElementById("product_sell_price");
-            product_sell_price.value = data.produit_prix_vente;
-            product_sell_price.setAttribute("data-original", data.produit_prix_vente);
-
-            let product_sell_price_div=document.getElementById("product_sell_price_div");
-            product_sell_price_div.classList.add("is-dirty");
-            product_sell_price_div.classList.remove("is-invalid");
-            */
             //avant l'envoie du formulaire vérifier ce qui a été changé par rapport a data
             //récupérer stock
             API_Get_Stock(data.produit_barcode)
@@ -570,6 +546,7 @@ function ScanUpdateProduct(){
           }
           else{
             document.getElementById("barcode").setAttribute("data-api", "produit") //si data-api = produit alors il faut créer le produit et le stock
+            document.getElementById("Loading").classList.add("hidden");
             //laisse l'utilisateur remplir le formulaire en sachant qu'il faudra créer le produit
           }
         })
