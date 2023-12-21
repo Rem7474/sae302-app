@@ -155,13 +155,55 @@ function AffichePanier(){
     console.log(JSON.stringify(localpanier));
     let panierHTML = "";
     let total = 0;
+    let table=document.createElement("table");
+    table.classList.add("mdl-data-table mdl-js-data-table mdl-data-table--selectable mdl-shadow--2dp");
+    /*
+    <thead>
+    <tr>
+      <th class="mdl-data-table__cell--non-numeric">Material</th>
+      <th>Quantity</th>
+      <th>Unit price</th>
+    </tr>
+  </thead>*/
+    let thead=document.createElement("thead");
+    let tr=document.createElement("tr");
+    let th=document.createElement("th");
+    th.classList.add("mdl-data-table__cell--non-numeric");
+    th.innerHTML="Nom";
+    tr.appendChild(th);
+    th=document.createElement("th");
+    th.innerHTML="Quantité";
+    tr.appendChild(th);
+    th=document.createElement("th");
+    th.innerHTML="Prix Total";
+    tr.appendChild(th);
+    thead.appendChild(tr);
+    table.appendChild(thead);
+    let tbody=document.createElement("tbody");
     for (let id in localpanier){
-        //création d'une ligne pour chaque produit (avec utilisation de mdl)
-        panierHTML += "<div class='row'><div class='col-6'>"+localpanier[id]["produit_nom"]+"</div><div class='col-3'>"+localpanier[id]["quantite"]+"</div><div class='col-3'>"+localpanier[id]["produit_prix_vente"]+"</div></div>";
-        total += localpanier[id]["produit_prix_vente"]*localpanier[id]["quantite"];
+        let tr=document.createElement("tr");
+        let td=document.createElement("td");
+        td.classList.add("mdl-data-table__cell--non-numeric");
+        td.innerHTML=localpanier[id]["produit_nom"];
+        tr.appendChild(td);
+        td=document.createElement("td");
+        td.innerHTML=localpanier[id]["quantite"];
+        tr.appendChild(td);
+        td=document.createElement("td");
+        td.innerHTML=localpanier[id]["quantite"]*localpanier[id]["produit_prix_vente"];
+        tr.appendChild(td);
+        tbody.appendChild(tr);
+        total += localpanier[id]["quantite"]*localpanier[id]["produit_prix_vente"];
     }
+    //ajout des event listeners sur les cases à cocher pour appeler la fonction de calcul du total
+    table.appendChild(tbody);
+    document.getElementById("panier").innerHTML = "";
+    document.getElementById("panier").appendChild(table);
+    //
+    /*
     document.getElementById("panier").innerHTML = panierHTML;
     document.getElementById("total").innerHTML = "Total : "+total;
     document.getElementById("valider").classList.remove("hidden");
+    */
     //document.getElementById("valider").addEventListener("click", ValiderPanier, false);
 }
