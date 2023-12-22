@@ -29,6 +29,10 @@ function eventListeners(){
   
     //Event pour vérifier si l'appareil est hors ligne
     document.addEventListener("offline", OffLineError, false);
+
+    //bouton de validation et suppression du panier
+    document.getElementById("valider").addEventListener("click", ValiderPanier, false);
+    document.getElementById("delete").addEventListener("click", SupprimerArticle, false);
   }
 function OffLineError(){
     alert("Vous êtes hors ligne");
@@ -76,7 +80,7 @@ function AjoutPanier(){
                             let id=data.stock_barcode;
                             article[id]["stock"] = data.stock_quantite;
                             console.log(JSON.stringify(article[id])); //->"{"produit_barcode":"52202023","produit_nom":"Cuvelier","produit_prix_achat":"100.00","produit_prix_vente":"150.00","message":"Product found","quantite":14}"
-                            AddtoPanier(panier);
+                            AddtoPanier(JSON.stringify(article[id]));
                         }
                         else{
                             Display_Error("Stock not found" ,"ScanUpdateProduct",data);
@@ -118,6 +122,9 @@ function Display_Error(message, fonction, details){
     console.log("Erreur de :"+fonction+" : "+message);
 }
 function AddtoPanier(localarticle){
+    console.log("Ajout au panier");
+    console.log(localarticle);
+    localarticle = JSON.parse(localarticle);
     //article : description du produit avec le stock max disponible
     //vérifie le panier actuel et ajoute le produit ou augmente la quantité
     //récupération du panier (s'il existe) dans le localstorage
@@ -151,20 +158,12 @@ function AddtoPanier(localarticle){
     AffichePanier();
 }
 function AffichePanier(){
+    let localpanier = JSON.parse(localStorage.getItem("panier"));
     console.log("Ajout au panier");
     console.log(JSON.stringify(localpanier));
-    let panierHTML = "";
     let total = 0;
     let table=document.createElement("table");
-    table.classList.add("mdl-data-table mdl-js-data-table mdl-data-table--selectable mdl-shadow--2dp");
-    /*
-    <thead>
-    <tr>
-      <th class="mdl-data-table__cell--non-numeric">Material</th>
-      <th>Quantity</th>
-      <th>Unit price</th>
-    </tr>
-  </thead>*/
+    table.classList.add("mdl-data-table", "mdl-js-data-table", "mdl-data-table--selectable", "mdl-shadow--2dp");
     let thead=document.createElement("thead");
     let tr=document.createElement("tr");
     let th=document.createElement("th");
@@ -185,6 +184,7 @@ function AffichePanier(){
         let td=document.createElement("td");
         td.classList.add("mdl-data-table__cell--non-numeric");
         td.innerHTML=localpanier[id]["produit_nom"];
+        td.setAttribute("data-barcode", localpanier[id]["produit_barcode"]);
         tr.appendChild(td);
         td=document.createElement("td");
         td.innerHTML=localpanier[id]["quantite"];
@@ -197,13 +197,80 @@ function AffichePanier(){
     }
     //ajout des event listeners sur les cases à cocher pour appeler la fonction de calcul du total
     table.appendChild(tbody);
+    componentHandler.upgradeElement(table);
     document.getElementById("panier").innerHTML = "";
     document.getElementById("panier").appendChild(table);
+    document.getElementById("divpanier").classList.remove("hidden");
     //
     /*
     document.getElementById("panier").innerHTML = panierHTML;
     document.getElementById("total").innerHTML = "Total : "+total;
-    document.getElementById("valider").classList.remove("hidden");
+    
     */
     //document.getElementById("valider").addEventListener("click", ValiderPanier, false);
+    //ADD EVENT LISTENER
+    
+    document.querySelectorAll('table .mdl-checkbox__input').forEach(item => {
+        item.addEventListener('change', CalculPanier)
+    })
+}
+function testpanier(){
+    let localpanier = JSON.parse('{"52202023":{"produit_barcode":"52202023","produit_nom":"Cuvelier","produit_prix_achat":"100.00","produit_prix_vente":"150.00","message":"Product found","stock":14,"quantite":8},"53202023":{"produit_barcode":"53202023","produit_nom":"Produit2","produit_prix_achat":"100.00","produit_prix_vente":"10.00","message":"Product found","stock":8,"quantite":3}}');
+    //mise en localstorage
+    localStorage.setItem("panier", JSON.stringify(localpanier));
+    AffichePanier();
+}
+function CalculPanier(event){
+    document.getElementById("valider").disabled = "disabled";
+    document.getElementById("delete").disabled = "disabled";
+    console.log("Calcul du panier");
+    //calcul du total en fonction des cases cochées
+    let total = 0;
+    let nbarticles = 0;
+    //récupère toute les cases cochées
+    let cases = document.querySelectorAll('tbody label');
+    //parcours toutes les cases cochées
+    for (let i=0; i<cases.length; i++){
+        //si la case est cochée
+        console.log(cases[i]);
+        if (cases[i].classList.contains("is-checked")){
+            //récupère la quantité du produit
+            let quantite = cases[i].parentNode.parentNode.childNodes[2].innerHTML;
+            //récupère le prix du produit
+            let prix = cases[i].parentNode.parentNode.childNodes[3].innerHTML;
+            //ajoute le prix total au total
+            total += parseFloat(prix);
+            //ajoute la quantité au nombre d'articles
+            nbarticles += parseFloat(quantite);
+            //activer le bouton valider
+            document.getElementById("valider").disabled = false;
+            document.getElementById("delete").disabled = false;
+        }
+    }
+    //affiche le total
+    document.getElementById("total").innerHTML = "Total : "+parseFloat(total);
+    document.getElementById("delete").addEventListener("click", SupprimerArticle, false);
+}
+function ValiderPanier(){
+
+}
+function SupprimerArticle(){
+    console.log("Supprimer article");
+    //récupère toute les cases cochées
+    let cases = document.querySelectorAll('tbody label');
+    //parcours toutes les cases cochées
+    for (let i=0; i<cases.length; i++){
+        //si la case est cochée
+        console.log(cases[i]);
+        if (cases[i].classList.contains("is-checked")){
+            //récupère le barcode du produit
+            let barcode = cases[i].parentNode.parentNode.childNodes[0].getAttribute("data-barcode");
+            //supprime le produit du panier
+            panier = JSON.parse(localStorage.getItem("panier"));
+            delete panier[barcode];
+            localStorage.setItem("panier", JSON.stringify(panier));
+        }
+    }
+    //affiche le panier
+    AffichePanier();
 }

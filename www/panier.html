@@ -16,6 +16,7 @@
         <script src="https://cdn.jsdelivr.net/jsbarcode/3.6.0/JsBarcode.all.min.js"></script>
         <script src="cordova.js" defer></script>
         <link rel="stylesheet" href="css/card.css">
+        <link rel="stylesheet" href="css/panier.css">
         <title>Panier</title>
     </head>
     <body id="body">
@@ -27,9 +28,46 @@
             <div id="Loading" class="hidden">
                 <div id="p2" class="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div>
             </div>
-            <div id="valider" class="hidden">
-                <div id="panier"></div>
+            <div id="divpanier" class="hidden">
+                <div id="panier">
+                    <table class="mdl-data-table mdl-js-data-table mdl-data-table--selectable mdl-shadow--2dp">
+                        <thead>
+                          <tr>
+                            <th class="mdl-data-table__cell--non-numeric">Material</th>
+                            <th>Quantity</th>
+                            <th>Unit price</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td class="mdl-data-table__cell--non-numeric">Acrylic</td>
+                            <td>25</td>
+                            <td>$2.90</td>
+                          </tr>
+                          <tr>
+                            <td class="mdl-data-table__cell--non-numeric">Plywood</td>
+                            <td>50</td>
+                            <td>$1.25</td>
+                          </tr>
+                          <tr>
+                            <td class="mdl-data-table__cell--non-numeric">Laminate</td>
+                            <td>10</td>
+                            <td>$2.35</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                </div>
                 <div id="total"></div>
+
+                <div>
+                    <button id="delete" class="mdl-button mdl-js-button mdl-button--raised" disabled>
+                        Supprimer
+                    </button>
+                    <button id="valider"class="mdl-button mdl-js-button mdl-button--raised" disabled>
+                        Valider
+                    </button>
+                    
+                </div>
             </div>
             <div id="barre_navigation">
                 <ul>
