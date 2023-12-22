@@ -2,3 +2,32 @@
     margin-left: auto;
     margin-right: auto;
 }
+#action_button{
+    margin-left: auto;
+    margin-right: auto;
+    width: fit-content;
+    width: -moz-fit-content;
+}
+#total{
+    text-align: center;
+    font-size: 1.5em;
+    font-weight: bold;
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+#quantity_button i{
+    font-size: 1.5em;
+    text-align: center;
+}
+#quantity_button{
+    display: flex;
+    justify-content: space-between;
+    cursor: pointer;
+    margin: 1em;
+}
+#delete{
+    width: 30vw;
+}
+#valider{
+    width: 30vw;
+}

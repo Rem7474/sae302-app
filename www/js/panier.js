@@ -7,9 +7,10 @@
 
 //VARIABLE TEST
 //METTRE A FALSE POUR TESTER AVEC LES PLUGINS
-let test = false;
+let test = true;
 if (test){
   console.log("test");
+  testpanier();
   eventListeners();
 }
 document.addEventListener('deviceready', onDeviceReady, false);
@@ -31,8 +32,10 @@ function eventListeners(){
     document.addEventListener("offline", OffLineError, false);
 
     //bouton de validation et suppression du panier
-    document.getElementById("valider").addEventListener("click", ValiderPanier, false);
-    document.getElementById("delete").addEventListener("click", SupprimerArticle, false);
+    document.getElementById("valider").addEventListener("click", ValiderPanier, false);    
+    document.getElementById("delete").addEventListener("click", function(){ArticleAction("delete")}, false);
+    document.getElementById("moins").addEventListener("click", function(){ArticleAction("moins")}, false);
+    document.getElementById("plus").addEventListener("click", function(){ArticleAction("plus")}, false);
   }
 function OffLineError(){
     alert("Vous êtes hors ligne");
@@ -157,10 +160,18 @@ function AddtoPanier(localarticle){
     //affiche le panier
     AffichePanier();
 }
-function AffichePanier(){
+async function AffichePanier(){
+    //récupère le panier dans le localstorage
+    await CheckLocalStorage();
+
     let localpanier = JSON.parse(localStorage.getItem("panier"));
     console.log("Ajout au panier");
     console.log(JSON.stringify(localpanier));
+    //vériie si le panier est vide
+    if (localpanier == null){
+        document.getElementById("divpanier").classList.add("hidden");
+        return;
+    }
     let total = 0;
     let table=document.createElement("table");
     table.classList.add("mdl-data-table", "mdl-js-data-table", "mdl-data-table--selectable", "mdl-shadow--2dp");
@@ -200,29 +211,80 @@ function AffichePanier(){
     componentHandler.upgradeElement(table);
     document.getElementById("panier").innerHTML = "";
     document.getElementById("panier").appendChild(table);
+
     document.getElementById("divpanier").classList.remove("hidden");
-    //
-    /*
-    document.getElementById("panier").innerHTML = panierHTML;
-    document.getElementById("total").innerHTML = "Total : "+total;
-    
-    */
-    //document.getElementById("valider").addEventListener("click", ValiderPanier, false);
-    //ADD EVENT LISTENER
     
     document.querySelectorAll('table .mdl-checkbox__input').forEach(item => {
         item.addEventListener('change', CalculPanier)
     })
+    CalculPanier();
 }
+//fonction pour supprimer le panier s'il est vide ou retirer les produits en rupture de stock ou dont leur quantité est supérieure au stock ou égal à 0
+async function CheckLocalStorage() {
+    // récupère le panier dans le localstorage
+    let localpanier = JSON.parse(localStorage.getItem("panier"));
+
+    // vérifie si le panier est vide
+    if (localpanier == null || JSON.stringify(localpanier) == "{}") {
+        // supprime le panier
+        localStorage.removeItem("panier");
+    } else {
+        // tableau pour stocker toutes les promesses
+        const promises = [];
+
+        // parcours le panier
+        for (let id in localpanier) {
+            // vérifie si le produit est en stock
+            // récupère le stock du produit avec l'API
+            const promise = API_Get_Stock(id)
+                .then(response => {
+                    if (!response.ok) {
+                        Display_Error("Erreur de la requête 2", "ScanUpdateProduct", response.status);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.message == "Stock found") {
+                        // affiche les infos dans le formulaire
+                        let id = data.stock_barcode;
+                        localpanier[id]["stock"] = data.stock_quantite;
+                    } else {
+                        console.log("Stock not found");
+                        localpanier[id]["stock"] = 0;
+                    }
+                    if (localpanier[id]["stock"] <= 0) {
+                        // supprime le produit du panier
+                        delete localpanier[id];
+                        console.log("Produit supprimé du panier");
+                    }
+                    else if (localpanier[id]["quantite"] > localpanier[id]["stock"]) {
+                        // diminue la quantité du produit
+                        localpanier[id]["quantite"] = localpanier[id]["stock"];
+                    }
+                });
+
+            promises.push(promise);
+        }
+
+        // attend la résolution de toutes les promesses
+        await Promise.all(promises);
+
+        // enregistre le panier dans le localstorage après la résolution de toutes les promesses
+        localStorage.setItem("panier", JSON.stringify(localpanier));
+    }
+}
+
 function testpanier(){
     let localpanier = JSON.parse('{"52202023":{"produit_barcode":"52202023","produit_nom":"Cuvelier","produit_prix_achat":"100.00","produit_prix_vente":"150.00","message":"Product found","stock":14,"quantite":8},"53202023":{"produit_barcode":"53202023","produit_nom":"Produit2","produit_prix_achat":"100.00","produit_prix_vente":"10.00","message":"Product found","stock":8,"quantite":3}}');
     //mise en localstorage
     localStorage.setItem("panier", JSON.stringify(localpanier));
     AffichePanier();
 }
-function CalculPanier(event){
+function CalculPanier(){
     document.getElementById("valider").disabled = "disabled";
     document.getElementById("delete").disabled = "disabled";
+    document.getElementById("moins").disabled = "disabled";
+    document.getElementById("plus").disabled = "disabled";
     console.log("Calcul du panier");
     //calcul du total en fonction des cases cochées
     let total = 0;
@@ -231,8 +293,6 @@ function CalculPanier(event){
     let cases = document.querySelectorAll('tbody label');
     //parcours toutes les cases cochées
     for (let i=0; i<cases.length; i++){
-        //si la case est cochée
-        console.log(cases[i]);
         if (cases[i].classList.contains("is-checked")){
             //récupère la quantité du produit
             let quantite = cases[i].parentNode.parentNode.childNodes[2].innerHTML;
@@ -245,18 +305,17 @@ function CalculPanier(event){
             //activer le bouton valider
             document.getElementById("valider").disabled = false;
             document.getElementById("delete").disabled = false;
+            document.getElementById("moins").disabled = false;
+            document.getElementById("plus").disabled = false;
         }
     }
     //affiche le total
     document.getElementById("total").innerHTML = "Total : "+parseFloat(total);
-    document.getElementById("delete").addEventListener("click", SupprimerArticle, false);
 }
 function ValiderPanier(){
 
 }
-function SupprimerArticle(){
-    console.log("Supprimer article");
-    //récupère toute les cases cochées
+function ArticleAction(type){
     let cases = document.querySelectorAll('tbody label');
     //parcours toutes les cases cochées
     for (let i=0; i<cases.length; i++){
@@ -264,13 +323,58 @@ function SupprimerArticle(){
         console.log(cases[i]);
         if (cases[i].classList.contains("is-checked")){
             //récupère le barcode du produit
-            let barcode = cases[i].parentNode.parentNode.childNodes[0].getAttribute("data-barcode");
+            let barcode = cases[i].parentNode.parentNode.childNodes[1].getAttribute("data-barcode");
+            console.log(barcode);
             //supprime le produit du panier
-            panier = JSON.parse(localStorage.getItem("panier"));
-            delete panier[barcode];
-            localStorage.setItem("panier", JSON.stringify(panier));
+            switch(type){
+                case "delete":
+                    DeleteArticle(barcode);
+                    break;
+                case "moins":
+                    MoinsArticle(barcode);
+                    break;
+                case "plus":
+                    PlusArticle(barcode);
+                    break;
+            }
         }
     }
+}
+function DeleteArticle(barcode){
+    //récupère le panier dans le localstorage
+    let localpanier = JSON.parse(localStorage.getItem("panier"));
+    //supprime le produit du panier
+    delete localpanier[barcode];
+    //enregistre le panier dans le localstorage
+    localStorage.setItem("panier", JSON.stringify(localpanier));
     //affiche le panier
     AffichePanier();
+    CalculPanier();
+}
+function MoinsArticle(barcode){
+    //récupère le panier dans le localstorage
+    let localpanier = JSON.parse(localStorage.getItem("panier"));
+    //diminue la quantité du produit si elle est supérieure à 1
+    if (localpanier[barcode]["quantite"] > 1){
+        localpanier[barcode]["quantite"] -= 1;
+    }
+    //enregistre le panier dans le localstorage
+    localStorage.setItem("panier", JSON.stringify(localpanier));
+    //affiche le panier
+    AffichePanier();
+    CalculPanier();
+}
+function PlusArticle(barcode){
+    console.log("AJOUTER AU PANIER")
+    //récupère le panier dans le localstorage
+    let localpanier = JSON.parse(localStorage.getItem("panier"));
+    //augmente la quantité du produit si elle est inférieure au stock
+    if (localpanier[barcode]["quantite"] < localpanier[barcode]["stock"]){
+        localpanier[barcode]["quantite"] += 1;
+    }
+    //enregistre le panier dans le localstorage
+    localStorage.setItem("panier", JSON.stringify(localpanier));
+    //affiche le panier
+    AffichePanier();
+    CalculPanier();
 }
