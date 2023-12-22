@@ -7,8 +7,8 @@
 
 //VARIABLE TEST
 //METTRE A FALSE POUR TESTER AVEC LES PLUGINS
-let test = true;
-if (test){
+const TEST = true;
+if (TEST){
   console.log("test");
   testpanier();
   eventListeners();
