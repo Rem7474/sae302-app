@@ -163,7 +163,15 @@ function AddtoPanier(localarticle){
 async function AffichePanier(){
     //récupère le panier dans le localstorage
     await CheckLocalStorage();
-
+    //récupère la liste des cases déja coché si le panier est déjà affiché
+    let cases = document.querySelectorAll('tbody label');
+    let caseschecked = [];
+    for (let i=0; i<cases.length; i++){
+        if (cases[i].classList.contains("is-checked")){
+            caseschecked.push(cases[i].parentNode.parentNode.childNodes[1].getAttribute("data-barcode"));
+        }
+    }
+    console.log("cases checked : "+caseschecked)
     let localpanier = JSON.parse(localStorage.getItem("panier"));
     console.log("Ajout au panier");
     console.log(JSON.stringify(localpanier));
@@ -213,10 +221,19 @@ async function AffichePanier(){
     document.getElementById("panier").appendChild(table);
 
     document.getElementById("divpanier").classList.remove("hidden");
-    
+    //ajout des event listeners sur les cases à cocher pour appeler la fonction de calcul du total
     document.querySelectorAll('table .mdl-checkbox__input').forEach(item => {
         item.addEventListener('change', CalculPanier)
     })
+    //recoche les cases déja cochées précédemment si elles sont toujours dans le panier
+    for (let i=0; i<caseschecked.length; i++){
+        let checkbox = document.querySelector('table [data-barcode="'+caseschecked[i]+'"]');
+        if (checkbox != null){
+            console.log("case cochée : ");
+            console.log(checkbox.parentNode.childNodes[0].childNodes[0]);
+            checkbox.parentNode.childNodes[0].childNodes[0].classList.add("is-checked");
+        }
+    }
     CalculPanier();
 }
 //fonction pour supprimer le panier s'il est vide ou retirer les produits en rupture de stock ou dont leur quantité est supérieure au stock ou égal à 0
