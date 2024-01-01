@@ -31,6 +31,10 @@ function API_Get_User(uid){
     let url = "https://api.sae302.remcorp.fr/sae302-api/updateStock.php?barcode="+barcode+"&stock="+stock;
     return fetch(url)
   }
+  function API_Add_Vente(uid, barcode, quantite){
+    let url = "https://api.sae302.remcorp.fr/sae302-api/addSale.php?iduser="+uid+"&barcode="+barcode+"&quantite="+quantite;
+    return fetch(url)
+  }
 
   //FUNCTIONS AUTRES
   async function NFC_Read() {

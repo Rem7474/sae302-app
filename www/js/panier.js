@@ -21,7 +21,9 @@ function onDeviceReady() {
     console.log('Running cordova-' + cordova.platformId + '@' + cordova.version);
     /*--------------------------------------------------------------------------*/
     //EVENTS LISTENERS
-    eventListeners();
+    if (!TEST){
+      eventListeners();
+    }
 }
 //EVENTS LISTENERS
 function eventListeners(){
@@ -209,10 +211,11 @@ async function AffichePanier(){
         td.innerHTML=localpanier[id]["quantite"];
         tr.appendChild(td);
         td=document.createElement("td");
-        td.innerHTML=localpanier[id]["quantite"]*localpanier[id]["produit_prix_vente"];
+        prix=parseFloat(localpanier[id]["quantite"]*localpanier[id]["produit_prix_vente"]).toFixed(2);
+        td.innerHTML=prix;
         tr.appendChild(td);
         tbody.appendChild(tr);
-        total += localpanier[id]["quantite"]*localpanier[id]["produit_prix_vente"];
+        total += prix;
     }
     //ajout des event listeners sur les cases à cocher pour appeler la fonction de calcul du total
     table.appendChild(tbody);
@@ -327,7 +330,7 @@ function CalculPanier(){
         }
     }
     //affiche le total
-    document.getElementById("total").innerHTML = "Total : "+parseFloat(total);
+    document.getElementById("total").innerHTML = "Total : "+parseFloat(total).toFixed(2);
 }
 async function ValiderPanier(){
     //récupère le panier dans le localstorage, evoie les données au serveur et supprime le panier si la requête est ok
@@ -335,30 +338,46 @@ async function ValiderPanier(){
     await CheckLocalStorage();
     let localpanier = JSON.parse(localStorage.getItem("panier"));
     //vérie que le total du panier n'est pas suppérieur au nombre de consos de l'utilisateur -> attend la résolution de la promesse du lecteur NFC
-    let nbconsos = await GetNbConsosNFC();
+    let user_infos = await GetNbConsosNFC();
+    let nbconsos = user_infos.utilisateur_conso;
+    let uid = user_infos.utilisateur_id;
+    let prix_cumul = 0;
     console.log("CONSOS AU DEPART : "+nbconsos);
     for (let id in localpanier){
-        //envoie les données au serveur
-        API_Update_Stock(id, localpanier[id]["stock"]-localpanier[id]["quantite"])
-        .then(response => {
-            if (!response.ok) {
-                Display_Error("Erreur réseau" ,"ValiderPanier",response.status);
-            }
-            return response.json();
-        })
-        .then(data => {
-            if (data.message == "Stock updated") {
-                //affiche les infos dans le formulaire
-                console.log("Stock updated");
-            }
-            else{
-                Display_Error("Stock not updated" ,"ValiderPanier",data);
-            }
-        })
+        prix_cumul += parseFloat(localpanier[id]["quantite"])*parseFloat(localpanier[id]["produit_prix_vente"]/0.8);
     }
-    console.log("CONSOS A LA FIN : "+nbconsos);
-    //supprime le panier et défini le nombre de consos de l'utilisateur
-
+    prix_cumul=prix_cumul.toFixed(2);
+    if (prix_cumul > nbconsos){
+        Display_Error("Vous n'avez pas assez de consos" ,"ValiderPanier","Vous n'avez pas assez de consos");
+    }
+    else{
+        for (let id in localpanier){
+            //envoie les données au serveur
+            API_Add_Vente(uid, id, localpanier[id]["quantite"])
+            .then(response => {
+                if (!response.ok) {
+                    Display_Error("Erreur réseaux" ,"ValiderPanier",response.status);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.message == "Sale added") {
+                    //affiche les infos dans le formulaire
+                    console.log("Sale added");
+                    console.log(JSON.stringify(data));
+                }
+                else{
+                    Display_Error("Sale not added" ,"ValiderPanier",data);
+                }
+            })
+            .catch(error => {
+                Display_Error("Erreur inconnue" ,"ValiderPanier",error);
+            });
+        }
+        localStorage.removeItem("panier");
+        AffichePanier();
+        alert("Vente effectuée");
+    }
 }
 function ArticleAction(type){
     let cases = document.querySelectorAll('tbody label');
@@ -441,7 +460,7 @@ async function GetNbConsosNFC(){
             //affiche les infos dans le formulaire
             console.log("User found");
             console.log(JSON.stringify(data));
-            return data.utilisateur_conso;
+            return data;
         }
         else{
             Display_Error("User not found" ,"GetNbConsosNFC",data);
@@ -451,5 +470,4 @@ async function GetNbConsosNFC(){
         Display_Error("Erreur inconnue" ,"GetNbConsosNFC",error);
     }
     );
-    console.log("FIN");
 }
