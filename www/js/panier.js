@@ -329,7 +329,35 @@ function CalculPanier(){
     //affiche le total
     document.getElementById("total").innerHTML = "Total : "+parseFloat(total);
 }
-function ValiderPanier(){
+async function ValiderPanier(){
+    //récupère le panier dans le localstorage, evoie les données au serveur et supprime le panier si la requête est ok
+    //récupère le panier dans le localstorage
+    await CheckLocalStorage();
+    let localpanier = JSON.parse(localStorage.getItem("panier"));
+    //vérie que le total du panier n'est pas suppérieur au nombre de consos de l'utilisateur -> attend la résolution de la promesse du lecteur NFC
+    let nbconsos = await GetNbConsosNFC();
+    console.log("CONSOS AU DEPART : "+nbconsos);
+    for (let id in localpanier){
+        //envoie les données au serveur
+        API_Update_Stock(id, localpanier[id]["stock"]-localpanier[id]["quantite"])
+        .then(response => {
+            if (!response.ok) {
+                Display_Error("Erreur réseau" ,"ValiderPanier",response.status);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.message == "Stock updated") {
+                //affiche les infos dans le formulaire
+                console.log("Stock updated");
+            }
+            else{
+                Display_Error("Stock not updated" ,"ValiderPanier",data);
+            }
+        })
+    }
+    console.log("CONSOS A LA FIN : "+nbconsos);
+    //supprime le panier et défini le nombre de consos de l'utilisateur
 
 }
 function ArticleAction(type){
@@ -394,4 +422,15 @@ function PlusArticle(barcode){
     //affiche le panier
     AffichePanier();
     CalculPanier();
+}
+async function GetNbConsosNFC(){
+    //récupère le nombre de consos de l'utilisateur avec le lecteur NFC
+    //récupère l'uid du lecteur NFC
+    let uid = await NFC_Read();
+    //récupère les infos de l'utilisateur avec l'API
+    let user = await API_Get_User(uid);
+    //retourne le nombre de consos de l'utilisateur
+    console.log("JE SUIS ICI !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+    console.log(user["nbconsos"]);
+    return user["nbconsos"];
 }

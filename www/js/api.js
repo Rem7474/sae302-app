@@ -31,3 +31,19 @@ function API_Get_User(uid){
     let url = "https://api.sae302.remcorp.fr/sae302-api/updateStock.php?barcode="+barcode+"&stock="+stock;
     return fetch(url)
   }
+
+  //FUNCTIONS AUTRES
+  async function NFC_Read(){
+    nfc.readerMode(
+      nfc.FLAG_READER_NFC_A | nfc.FLAG_READER_NO_PLATFORM_SOUNDS, 
+      nfcTag => {
+        //appelle de la fonction pour faire la requête ajax et afficher les infos de l'utilisateur
+        nfc.disableReaderMode(
+          () => console.log('NFC reader mode disabled'),
+          error => console.log('Error disabling NFC reader mode', error)
+        );
+        return nfc.bytesToHexString(nfcTag.id);
+      },
+      error => console.log('NFC reader mode failed', error)
+    );
+  }

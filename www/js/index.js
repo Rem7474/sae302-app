@@ -59,7 +59,7 @@ function onDeviceReady() {
 
 
 //animation ouverture des fenetres
-function addAnimation(event){
+async function addAnimation(event){
   let button = event.currentTarget;
 
   //Animation de click
@@ -76,6 +76,13 @@ function addAnimation(event){
       document.getElementById("formulaire_add_user").addEventListener("submit", Add_User, false);
       updateForm("value",["","","",""],["card_uid", "user_name", "user_firstname", "user_nbconsos"]);
       if (!test){
+        //appelle fonction NFC
+        let uid = await NFC_Read();
+        //event pour valider le formulaire :
+        document.getElementById("card_uid").value = uid;
+        document.getElementById("card_uid_div").classList.add("is-dirty");
+        
+        /*
         nfc.readerMode(
           nfc.FLAG_READER_NFC_A | nfc.FLAG_READER_NO_PLATFORM_SOUNDS, 
           nfcTag => {
@@ -88,6 +95,7 @@ function addAnimation(event){
           },
           error => console.log('NFC reader mode failed', error)
         );
+        */
       }
       break;
     case "update_product":
@@ -114,21 +122,11 @@ function addAnimation(event){
       updateForm("src",["img/profil.jpg"],["view_user_photo"]);
       OpenWindow(target);
       if (!test){
-        nfc.readerMode(
-          nfc.FLAG_READER_NFC_A | nfc.FLAG_READER_NO_PLATFORM_SOUNDS, 
-          nfcTag => {
-            //appelle de la fonction pour faire la requête ajax et afficher les infos de l'utilisateur
-            nfc.disableReaderMode(
-              () => console.log('NFC reader mode disabled'),
-              error => console.log('Error disabling NFC reader mode', error)
-            );
-            document.getElementById("view_card_uid").innerText = nfc.bytesToHexString(nfcTag.id);
-            console.log(nfcTag.id);
-            //document.getElementById("view_card_uid_div").classList.add("is-dirty");
-            view_User(nfc.bytesToHexString(nfcTag.id));
-          },
-          error => console.log('NFC reader mode failed', error)
-        );
+        //appelle fonction NFC
+        let uid = await NFC_Read();
+        //event pour valider le formulaire :
+        document.getElementById("view_card_uid").innerText = uid;
+        view_User(uid);
       }
       break;
     default:
