@@ -333,26 +333,34 @@ function CalculPanier(){
     document.getElementById("total").innerHTML = "Total : "+parseFloat(total).toFixed(2);
 }
 async function ValiderPanier(){
+    //!!!!!!!!!!!!!!!!!ATTENTION!!!!!!!!!!!!!
+    //Ne prend pas en compte les artciles cochés...
+    
     //récupère le panier dans le localstorage, evoie les données au serveur et supprime le panier si la requête est ok
     //récupère le panier dans le localstorage
     await CheckLocalStorage();
     let localpanier = JSON.parse(localStorage.getItem("panier"));
     //vérie que le total du panier n'est pas suppérieur au nombre de consos de l'utilisateur -> attend la résolution de la promesse du lecteur NFC
     let user_infos = await GetNbConsosNFC();
-    let nbconsos = user_infos.utilisateur_conso;
-    let uid = user_infos.utilisateur_id;
+    let nbconsos = parseFloat(user_infos.utilisateur_conso);
+    let uid = user_infos.utilisateur_rfid_uid;
     let prix_cumul = 0;
     console.log("CONSOS AU DEPART : "+nbconsos);
     for (let id in localpanier){
         prix_cumul += parseFloat(localpanier[id]["quantite"])*parseFloat(localpanier[id]["produit_prix_vente"]/0.8);
     }
     prix_cumul=prix_cumul.toFixed(2);
+    console.log("PRIX CUMUL : "+prix_cumul);
     if (prix_cumul > nbconsos){
         Display_Error("Vous n'avez pas assez de consos" ,"ValiderPanier","Vous n'avez pas assez de consos");
     }
     else{
         for (let id in localpanier){
             //envoie les données au serveur
+            console.log("Envoie des données au serveur");
+            console.log("UID : "+uid);
+            console.log("ID : "+id);
+            console.log("Quantité : "+localpanier[id]["quantite"]);
             API_Add_Vente(uid, id, localpanier[id]["quantite"])
             .then(response => {
                 if (!response.ok) {
@@ -361,7 +369,7 @@ async function ValiderPanier(){
                 return response.json();
             })
             .then(data => {
-                if (data.message == "Sale added") {
+                if (data.message == "sale added") {
                     //affiche les infos dans le formulaire
                     console.log("Sale added");
                     console.log(JSON.stringify(data));
