@@ -428,9 +428,28 @@ async function GetNbConsosNFC(){
     //récupère l'uid du lecteur NFC
     let uid = await NFC_Read();
     //récupère les infos de l'utilisateur avec l'API
-    let user = await API_Get_User(uid);
-    //retourne le nombre de consos de l'utilisateur
-    console.log("JE SUIS ICI !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-    console.log(user["nbconsos"]);
-    return user["nbconsos"];
+    console.log("UID : "+uid);
+    return API_Get_User(uid)
+    .then(response => {
+        if (!response.ok) {
+            Display_Error("Erreur réseau" ,"GetNbConsosNFC",response.status);
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.message == "User found") {
+            //affiche les infos dans le formulaire
+            console.log("User found");
+            console.log(JSON.stringify(data));
+            return data.utilisateur_conso;
+        }
+        else{
+            Display_Error("User not found" ,"GetNbConsosNFC",data);
+        }
+    })
+    .catch(error => {
+        Display_Error("Erreur inconnue" ,"GetNbConsosNFC",error);
+    }
+    );
+    console.log("FIN");
 }

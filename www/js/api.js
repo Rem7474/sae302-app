@@ -33,17 +33,27 @@ function API_Get_User(uid){
   }
 
   //FUNCTIONS AUTRES
-  async function NFC_Read(){
+  async function NFC_Read() {
+  return new Promise((resolve, reject) => {
     nfc.readerMode(
       nfc.FLAG_READER_NFC_A | nfc.FLAG_READER_NO_PLATFORM_SOUNDS, 
       nfcTag => {
-        //appelle de la fonction pour faire la requête ajax et afficher les infos de l'utilisateur
         nfc.disableReaderMode(
-          () => console.log('NFC reader mode disabled'),
-          error => console.log('Error disabling NFC reader mode', error)
+          () => {
+            console.log('NFC reader mode disabled');
+            console.log('NFC tag scanned', nfcTag.id);
+            resolve(nfc.bytesToHexString(nfcTag.id));
+          },
+          error => {
+            console.log('Error disabling NFC reader mode', error);
+            reject(error);
+          }
         );
-        return nfc.bytesToHexString(nfcTag.id);
       },
-      error => console.log('NFC reader mode failed', error)
+      error => {
+        console.log('NFC reader mode failed', error);
+        reject(error);
+      }
     );
-  }
+  });
+}
