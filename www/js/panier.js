@@ -7,7 +7,7 @@
 
 //VARIABLE TEST
 //METTRE A FALSE POUR TESTER AVEC LES PLUGINS
-const TEST = false;
+const TEST = true;
 if (TEST){
   console.log("test");
   testpanier();
