@@ -8,6 +8,26 @@
     width: fit-content;
     width: -moz-fit-content;
 }
+#scan_div{
+    position: fixed;
+    bottom: 60px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: fit-content;
+    width: -moz-fit-content;
+}
+#scan{
+    font-size: 10em;
+}
+#scan_div button{
+    margin-top: 10px;
+    padding-inline: 20px;
+    width: 267px;
+    border-radius: 20px;
+    border: none;
+    background-color: white;
+    cursor: pointer;
+}
 #total{
     text-align: center;
     font-size: 1.5em;
