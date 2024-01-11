@@ -2,7 +2,7 @@
 //DATE : 20/12/2023
 //VERSION : 1.0
 //DESCRIPTION : Fichier javascript pour l'application mobile
-//PLUGINS : community-cordova-plugin-nfc, cordova-plugin-codescanner, cordova-plugin-camera
+//PLUGINS : community-cordova-plugin-nfc, cordova-plugin-codescanner, cordova-plugin-camera, cordova-plugin-dialogs
 //A RAJOUTER : plugin diagnostic pour vérifier si le NFC et la caméra sont activés
 
 //VARIABLE TEST
@@ -23,6 +23,7 @@ function onDeviceReady() {
     //EVENTS LISTENERS
     if (!TEST){
       eventListeners();
+      AffichePanier();
     }
 }
 //EVENTS LISTENERS
@@ -97,10 +98,12 @@ function AjoutPanier(){
                     });
               }
               else{
+                document.getElementById("Loading").classList.add("hidden");
                 Display_Error("Produit introuvable" ,"ScanUpdateProduct",data);
               }
             })
             .catch(error => {
+                document.getElementById("Loading").classList.add("hidden");
                 Display_Error("Erreur inconnue 2" ,"ScanUpdateProduct",error);
             });
         },
@@ -123,7 +126,7 @@ function AjoutPanier(){
       );
 }
 function Display_Error(message, fonction, details){
-    alert(message);
+    navigator.notification.alert(message, null, "Erreur de : "+fonction, "OK");
     console.log(JSON.stringify(details));
     console.log("Erreur de :"+fonction+" : "+message);
 }

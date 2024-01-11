@@ -1,1 +1,1 @@
-{"plugins":["community-cordova-plugin-nfc","cordova-plugin-compat","cordova-plugin-codescanner","cordova-plugin-network-information","cordova-plugin-camera"]}
+{"plugins":["community-cordova-plugin-nfc","cordova-plugin-compat","cordova-plugin-codescanner","cordova-plugin-network-information","cordova-plugin-camera","cordova-plugin-dialogs"]}

@@ -491,7 +491,7 @@ function checkChange(data){
 }
 
 function Display_Error(message, fonction, details){
-  alert(message);
+  navigator.notification.alert(message, null, "Erreur de : "+fonction, "OK");
   console.log(details);
   console.log("Erreur de :"+fonction);
 }
