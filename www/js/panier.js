@@ -7,7 +7,7 @@
 
 //VARIABLE TEST
 //METTRE A FALSE POUR TESTER AVEC LES PLUGINS
-const TEST = true;
+const TEST = false;
 if (TEST){
   console.log("test");
   testpanier();
@@ -405,7 +405,7 @@ async function ValiderPanier(){
 }
 function ArticleAction(type){
     let cases = document.querySelectorAll('tbody label');
-    //parcours toutes les cases cochées
+    //parcours toutes les cases cochées PROBLEME ICI
     for (let i=0; i<cases.length; i++){
         //si la case est cochée
         console.log(cases[i]);
@@ -427,6 +427,8 @@ function ArticleAction(type){
             }
         }
     }
+    AffichePanier();
+    CalculPanier();
 }
 function DeleteArticle(barcode){
     //récupère le panier dans le localstorage
@@ -434,10 +436,7 @@ function DeleteArticle(barcode){
     //supprime le produit du panier
     delete localpanier[barcode];
     //enregistre le panier dans le localstorage
-    localStorage.setItem("panier", JSON.stringify(localpanier));
-    //affiche le panier
-    AffichePanier();
-    CalculPanier();
+    localStorage.setItem("panier", JSON.stringify(localpanier));    
 }
 function MoinsArticle(barcode){
     //récupère le panier dans le localstorage
@@ -448,9 +447,6 @@ function MoinsArticle(barcode){
     }
     //enregistre le panier dans le localstorage
     localStorage.setItem("panier", JSON.stringify(localpanier));
-    //affiche le panier
-    AffichePanier();
-    CalculPanier();
 }
 function PlusArticle(barcode){
     console.log("AJOUTER AU PANIER")
@@ -462,9 +458,6 @@ function PlusArticle(barcode){
     }
     //enregistre le panier dans le localstorage
     localStorage.setItem("panier", JSON.stringify(localpanier));
-    //affiche le panier
-    AffichePanier();
-    CalculPanier();
 }
 async function GetNbConsosNFC(){
     //récupère le nombre de consos de l'utilisateur avec le lecteur NFC
