@@ -57,6 +57,7 @@ function AjoutPanier(){
         //ETAPE 2 : récupérer le code barre
         //appelle de la fonction pour récupérer les infos du produit
         //ETAPE 3 : récupérer les infos du produit
+        document.getElementById("Loading").classList.remove("hidden");
         API_Get_Product(result.text)
             .then(response => {
                 if (!response.ok) {
