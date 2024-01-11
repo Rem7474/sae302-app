@@ -35,7 +35,7 @@ function eventListeners(){
     document.addEventListener("offline", OffLineError, false);
 
     //bouton de validation et suppression du panier
-    document.getElementById("valider").addEventListener("click", ValiderPanier, false);    
+    document.getElementById("valider").addEventListener("click", CheckboxPanier, false);    
     document.getElementById("delete").addEventListener("click", function(){ArticleAction("delete")}, false);
     document.getElementById("moins").addEventListener("click", function(){ArticleAction("moins")}, false);
     document.getElementById("plus").addEventListener("click", function(){ArticleAction("plus")}, false);
@@ -129,6 +129,7 @@ function Display_Error(message, fonction, details){
     navigator.notification.alert(message, null, "Erreur de : "+fonction, "OK");
     console.log(JSON.stringify(details));
     console.log("Erreur de :"+fonction+" : "+message);
+    document.getElementById("Loading").classList.add("hidden");
 }
 function AddtoPanier(localarticle){
     console.log("Ajout au panier");
@@ -336,6 +337,17 @@ function CalculPanier(){
     //affiche le total
     document.getElementById("total").innerHTML = "Total : "+parseFloat(total).toFixed(2);
 }
+//fonction pour demander la validation du panier et attendre la lecture du lecteur NFC
+function CheckboxPanier(){
+    navigator.notification.confirm("Metter la carte au dos du téléphone", CallBackCheckboxPanier, "Validation du panier", ["Ok", "Annuler"]);
+}
+function CallBackCheckboxPanier(buttonIndex){
+    //si le bouton oui est cliqué alors appel de la fonction pour valider le panier
+    if (buttonIndex == 1){
+        ValiderPanier();
+        document.getElementById("Loading").classList.remove("hidden");
+    }
+}
 async function ValiderPanier(){
     //!!!!!!!!!!!!!!!!!ATTENTION!!!!!!!!!!!!!
     //Ne prend pas en compte les artciles cochés...
@@ -457,7 +469,14 @@ function PlusArticle(barcode){
 async function GetNbConsosNFC(){
     //récupère le nombre de consos de l'utilisateur avec le lecteur NFC
     //récupère l'uid du lecteur NFC
-    let uid = await NFC_Read();
+    try{
+        var uid = await NFC_Read();
+    }
+    catch(error){
+        Display_Error("Erreur lors de la lecture de la carte" ,"GetNbConsosNFC",error);
+        //retourne une erreur de la promesse
+        throw error;
+    }
     //récupère les infos de l'utilisateur avec l'API
     console.log("UID : "+uid);
     return API_Get_User(uid)

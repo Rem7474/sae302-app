@@ -37,27 +37,30 @@ function API_Get_User(uid){
   }
 
   //FUNCTIONS AUTRES
-  async function NFC_Read() {
-  return new Promise((resolve, reject) => {
-    nfc.readerMode(
-      nfc.FLAG_READER_NFC_A | nfc.FLAG_READER_NO_PLATFORM_SOUNDS, 
-      nfcTag => {
-        nfc.disableReaderMode(
-          () => {
-            console.log('NFC reader mode disabled');
-            console.log('NFC tag scanned', nfcTag.id);
-            resolve(nfc.bytesToHexString(nfcTag.id));
+async function NFC_Read() {
+    return Promise.race([
+      new Promise((resolve, reject) => {
+        nfc.readerMode(
+          nfc.FLAG_READER_NFC_A | nfc.FLAG_READER_NO_PLATFORM_SOUNDS, 
+          nfcTag => {
+            nfc.disableReaderMode(
+              () => {
+                console.log('NFC reader mode disabled');
+                console.log('NFC tag scanned', nfcTag.id);
+                resolve(nfc.bytesToHexString(nfcTag.id));
+              },
+              error => {
+                console.log('Error disabling NFC reader mode', error);
+                reject(error);
+              }
+            );
           },
           error => {
-            console.log('Error disabling NFC reader mode', error);
+            console.log('NFC reader mode failed', error);
             reject(error);
           }
         );
-      },
-      error => {
-        console.log('NFC reader mode failed', error);
-        reject(error);
-      }
-    );
-  });
+      }),
+      new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout after 15 seconds')), 15000))
+    ]);
 }
