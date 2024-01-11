@@ -17,6 +17,7 @@
     "cordova-android": "^12.0.1",
     "cordova-plugin-camera": "^7.0.0",
     "cordova-plugin-codescanner": "^8.1.4",
+    "cordova-plugin-dialogs": "^2.0.2",
     "cordova-plugin-network-information": "^3.0.0"
   },
   "cordova": {
@@ -31,7 +32,8 @@
       "cordova-plugin-network-information": {},
       "cordova-plugin-camera": {
         "ANDROIDX_CORE_VERSION": "1.6.+"
-      }
+      },
+      "cordova-plugin-dialogs": {}
     }
   },
   "dependencies": {
