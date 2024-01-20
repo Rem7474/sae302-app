@@ -55,3 +55,13 @@
 #valider{
     width: 30vw;
 }
+#articles{
+    position: absolute;
+    width: 100vw;
+    top: 0;
+    max-height: 400px;
+    -webkit-backdrop-filter: blur(5px);
+    backdrop-filter: blur(5px);
+    text-align: center;
+    padding-top: 5px;
+}

@@ -23,6 +23,10 @@ function API_Get_User(uid){
     let url = "https://api.sae302.remcorp.fr/sae302-api/getStock.php?barcode="+barcode;
     return fetch(url)
   }
+  function API_Get_All_Stock(){
+    let url = "https://api.sae302.remcorp.fr/sae302-api/getAllStock.php";
+    return fetch(url)
+  }
   function API_Add_Stock(barcode, stock){
     let url = "https://api.sae302.remcorp.fr/sae302-api/addStock.php?barcode="+barcode+"&stock="+stock;
     return fetch(url)

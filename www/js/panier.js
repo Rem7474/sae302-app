@@ -7,11 +7,12 @@
 
 //VARIABLE TEST
 //METTRE A FALSE POUR TESTER AVEC LES PLUGINS
-const TEST = false;
+const TEST = true;
 if (TEST){
   console.log("test");
   testpanier();
   eventListeners();
+  AfficheArticles();
 }
 document.addEventListener('deviceready', onDeviceReady, false);
 console.log("Chargement de l'application");
@@ -24,6 +25,7 @@ function onDeviceReady() {
     if (!TEST){
       eventListeners();
       AffichePanier();
+      AfficheArticles();
     }
 }
 //EVENTS LISTENERS
@@ -51,61 +53,14 @@ function AjoutPanier(){
     //ETAPE 5 : afficher le panier
     //ETAPE 6 : afficher le prix total
     //ETAPE 7 : afficher le bouton pour valider le panier
-    var article = {};
+    
     cordova.plugins.barcodeScanner.scan(
         function (result) {
         console.log(result.text);
         //ETAPE 2 : récupérer le code barre
         //appelle de la fonction pour récupérer les infos du produit
         //ETAPE 3 : récupérer les infos du produit
-        document.getElementById("Loading").classList.remove("hidden");
-        API_Get_Product(result.text)
-            .then(response => {
-                if (!response.ok) {
-                Display_Error("Erreur de la requête 1" ,"ScanUpdateProduct",response.status);
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data.message == "Product found") {
-                    //affiche les infos dans le formulaire
-                    let id=data.produit_barcode;
-                    article[id] = data;
-                    //avant l'envoie du formulaire vérifier ce qui a été changé par rapport a data
-                    //récupérer stock
-                    API_Get_Stock(data.produit_barcode)
-                    .then (response => {
-                        document.getElementById("Loading").classList.add("hidden");
-                        if (!response.ok) {
-                        Display_Error("Erreur de la requête 2" ,"ScanUpdateProduct",response.status);
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        if (data.message == "Stock found") {
-                            //affiche les infos dans le formulaire
-                            let id=data.stock_barcode;
-                            article[id]["stock"] = data.stock_quantite;
-                            console.log(JSON.stringify(article[id])); //->"{"produit_barcode":"52202023","produit_nom":"Cuvelier","produit_prix_achat":"100.00","produit_prix_vente":"150.00","message":"Product found","quantite":14}"
-                            AddtoPanier(JSON.stringify(article[id]));
-                        }
-                        else{
-                            Display_Error("Stock not found" ,"ScanUpdateProduct",data);
-                        }
-                    })
-                    .catch(error => {
-                        Display_Error("Erreur inconnue 1" ,"ScanUpdateProduct",error);
-                    });
-              }
-              else{
-                document.getElementById("Loading").classList.add("hidden");
-                Display_Error("Produit introuvable" ,"ScanUpdateProduct",data);
-              }
-            })
-            .catch(error => {
-                document.getElementById("Loading").classList.add("hidden");
-                Display_Error("Erreur inconnue 2" ,"ScanUpdateProduct",error);
-            });
+        TraiteAjoutPanier(result.text);
         },
         function (error) {
             alert("Scanning failed: " + error);
@@ -125,8 +80,66 @@ function AjoutPanier(){
         }
       );
 }
+function TraiteAjoutPanier(barcode){
+    var article = {};
+    document.getElementById("Loading").classList.remove("hidden");
+    API_Get_Product(barcode)
+        .then(response => {
+            if (!response.ok) {
+            Display_Error("Erreur de la requête 1" ,"TraiteAjoutPanier",response.status);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log(data);
+            if (data.message == "Product found") {
+                //affiche les infos dans le formulaire
+                let id=data.produit_barcode;
+                article[id] = data;
+                //avant l'envoie du formulaire vérifier ce qui a été changé par rapport a data
+                //récupérer stock
+                API_Get_Stock(data.produit_barcode)
+                .then (response => {
+                    document.getElementById("Loading").classList.add("hidden");
+                    if (!response.ok) {
+                    Display_Error("Erreur de la requête 2" ,"TraiteAjoutPanier",response.status);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log("REQUETE 2")
+                    if (data.message == "Stock found") {
+                        //affiche les infos dans le formulaire
+                        let id=data.stock_barcode;
+                        article[id]["stock"] = data.stock_quantite;
+                        console.log(JSON.stringify(article[id])); //->"{"produit_barcode":"52202023","produit_nom":"Cuvelier","produit_prix_achat":"100.00","produit_prix_vente":"150.00","message":"Product found","quantite":14}"
+                        AddtoPanier(JSON.stringify(article[id]));
+                    }
+                    else{
+                        Display_Error("Stock not found" ,"TraiteAjoutPanier",data);
+                    }
+                })
+                .catch(error => {
+                    Display_Error("Erreur inconnue 1" ,"TraiteAjoutPanier",error);
+                });
+          }
+          else{
+            document.getElementById("Loading").classList.add("hidden");
+            Display_Error("Produit introuvable" ,"TraiteAjoutPanier",data);
+          }
+        })
+        .catch(error => {
+            document.getElementById("Loading").classList.add("hidden");
+            Display_Error("Erreur inconnue 2" ,"TraiteAjoutPanier",error);
+        });
+}
 function Display_Error(message, fonction, details){
+    if (!TEST){
     navigator.notification.alert(message, null, "Erreur de : "+fonction, "OK");
+    }
+    else{
+        alert(message);
+    }
     console.log(JSON.stringify(details));
     console.log("Erreur de :"+fonction+" : "+message);
     document.getElementById("Loading").classList.add("hidden");
@@ -494,4 +507,44 @@ async function GetNbConsosNFC(){
         Display_Error("Erreur inconnue" ,"GetNbConsosNFC",error);
     }
     );
+}
+async function AfficheArticles(){
+   return API_Get_All_Stock()
+   .then(response => {
+         if (!response.ok) {
+              Display_Error("Erreur réseau" ,"AfficheArticles",response.status);
+         }
+         return response.json();
+    })
+    .then(data => {
+        if (data.message == "All Stock found") {
+            //affiche les infos dans le formulaire
+            console.log("All Stock found");
+            console.log(JSON.stringify(data));
+            //supprime data.message de date 
+            delete data.message;
+            //affichage d'un bouton avec le nom du produits pour chaque produit en stock
+            let dataArray = Object.values(data);
+            dataArray.forEach(element => {
+                let button=document.createElement("button");
+                button.classList.add("mdl-button", "mdl-js-button", "mdl-button--raised", "mdl-js-ripple-effect");
+                button.innerHTML=element.produit_nom;
+                button.setAttribute("data-barcode", element.produit_barcode);
+                button.addEventListener("click", BoutonAjoutPanier, false);
+                document.getElementById("articles").appendChild(button);
+            });
+        }
+        else{
+            Display_Error("Stock not found" ,"AfficheArticles",data);
+        }
+    })
+    .catch(error => {
+        Display_Error("Erreur inconnue" ,"AfficheArticles",error);
+    }
+    );
+}
+function BoutonAjoutPanier(){
+    //ajoute le produit au panier
+    let barcode = this.getAttribute("data-barcode");
+    TraiteAjoutPanier(barcode);
 }
