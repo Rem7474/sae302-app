@@ -224,6 +224,8 @@ async function AffichePanier(){
         td.classList.add("mdl-data-table__cell--non-numeric");
         td.innerHTML=localpanier[id]["produit_nom"];
         td.setAttribute("data-barcode", localpanier[id]["produit_barcode"]);
+        //ajout d'une classe pour limite la largeur du nom du produit
+        td.classList.add("tdnom");
         tr.appendChild(td);
         td=document.createElement("td");
         td.innerHTML=localpanier[id]["quantite"];

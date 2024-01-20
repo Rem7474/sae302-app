@@ -76,3 +76,7 @@
     cursor: pointer;
     font-size: 0.7em;
 }
+.tdnom{
+    max-width: 30vw;
+    overflow: hidden;
+}
