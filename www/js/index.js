@@ -82,20 +82,6 @@ async function addAnimation(event){
         document.getElementById("card_uid").value = uid;
         document.getElementById("card_uid_div").classList.add("is-dirty");
         
-        /*
-        nfc.readerMode(
-          nfc.FLAG_READER_NFC_A | nfc.FLAG_READER_NO_PLATFORM_SOUNDS, 
-          nfcTag => {
-            nfc.disableReaderMode(
-              () => console.log('NFC reader mode disabled'),
-              error => console.log('Error disabling NFC reader mode', error)
-            );
-            document.getElementById("card_uid").value = nfc.bytesToHexString(nfcTag.id);
-            document.getElementById("card_uid_div").classList.add("is-dirty");
-          },
-          error => console.log('NFC reader mode failed', error)
-        );
-        */
       }
       break;
     case "update_product":
@@ -110,8 +96,24 @@ async function addAnimation(event){
         ScanUpdateProduct();
       }
       break;
-    case "view_products":
-      console.log("historique");
+    case "add_conso":
+      //appel de la fonction nfc pour récupérer l'uid de la carte
+      console.log("add_conso");
+      if (!test){
+        //appelle fonction NFC
+        let uid = await NFC_Read();
+
+        //boite de dialogue pour demander la quantité
+        navigator.notification.prompt(
+          'Combien de consommations voulez-vous affecté ?',  // message
+          function(results) {
+            Add_Conso(results, uid);
+          },                  // fonction de callback
+          'Ajout de consommations',            // titre
+          ['Ok','Annuler'],             // boutons
+          '1'                 // valeur par défaut
+        );
+      }
       break;
     case "view_users":
       JsBarcode("#barcode-container", "12345678", {
@@ -621,3 +623,33 @@ function dataFormulaire(method, ids, data = []){
   }
 }
 
+function Add_Conso(results, uid){
+  //appel de l'API pour ajouter les consos
+  document.getElementById("Loading").classList.remove("hidden");
+  API_Add_Conso(uid,results.input1)
+    .then(response => {
+      document.getElementById("Loading").classList.add("hidden");
+      if (!response.ok) {
+        Display_Error("Erreur Réseau" ,"Add_Conso",response.status);
+      }
+      return response.json();
+    })
+    .then(status => {
+      if (status.message == "Conso updated") {
+        // Affichage de la confettis
+        confetti({
+          particleCount: 100,
+          spread: 70,
+          origin: { y: 0.8 }
+        });
+      } else {
+        Display_Error("Erreur :" + status, "Add_Conso", status);
+      }
+    })
+    .catch(error => {
+      Display_Error("Erreur Réseau", "Add_Conso", error.message);
+    })
+    .finally(() => {
+      CloseWindow(event);
+    });
+}

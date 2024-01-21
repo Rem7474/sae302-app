@@ -18,6 +18,7 @@ function OffLineError(){
 }
 
 function AfficheCommandes(){
+    document.getElementById("Loading").classList.remove("hidden");
     return API_Get_Ventes_Historique()
     .then(response => {
           if (!response.ok) {
@@ -29,27 +30,6 @@ function AfficheCommandes(){
          if (data.message == "Sales found") {
              //supprime data.message de data 
              delete data.message;
-             //affichage avec mdl-data-table les données : date, nom du client, nom du produit, quantité, prix unitaire, prix total
-             // structure de data :{
-                /*
-    "0": {
-        "vente_id": 6,
-        "vente_refuser": 40,
-        "vente_refproduit": "5449000257789",
-        "vente_date": "2024-01-21 20:21:00",
-        "vente_quantite": 1,
-        "utilisateur_id": 40,
-        "utilisateur_rfid_uid": "04202fc2e46b80",
-        "utilisateur_prenom": "Rémy ",
-        "utilisateur_conso": "7",
-        "utilisateur_nom": "Cuvelier ",
-        "produit_barcode": "5449000257789",
-        "produit_nom": "Minute mais orange",
-        "produit_prix_achat": "0.40",
-        "produit_prix_vente": "0.80"
-    },
-    "message": "Sales found"
-}*/
             //création de la table
             let table=document.createElement("table");
             table.classList.add("mdl-data-table");

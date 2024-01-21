@@ -43,6 +43,10 @@ function API_Get_Ventes_Historique(){
     let url = "https://api.sae302.remcorp.fr/sae302-api/getAllSales.php";
     return fetch(url)
 }
+function API_Add_Conso(uid,nbconsos){
+    let url = "https://api.sae302.remcorp.fr/sae302-api/updateConso.php?id="+uid+"&nbconso="+nbconsos;
+    return fetch(url)
+}
   //FUNCTIONS AUTRES
 async function NFC_Read() {
     return Promise.race([
