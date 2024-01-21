@@ -1,5 +1,5 @@
 //affichage des commandes passées a l'aide de requete api
-const TEST = true;
+const TEST = false;
 document.addEventListener('deviceready', onDeviceReady, false);
 console.log("Chargement de l'application");
 AfficheCommandes()
