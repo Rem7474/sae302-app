@@ -39,7 +39,10 @@ function API_Get_User(uid){
     let url = "https://api.sae302.remcorp.fr/sae302-api/addSale.php?iduser="+uid+"&barcode="+barcode+"&quantite="+quantite;
     return fetch(url)
   }
-
+function API_Get_Ventes_Historique(){
+    let url = "https://api.sae302.remcorp.fr/sae302-api/getAllSales.php";
+    return fetch(url)
+}
   //FUNCTIONS AUTRES
 async function NFC_Read() {
     return Promise.race([

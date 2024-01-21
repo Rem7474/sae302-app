@@ -1,0 +1,11 @@
+td{
+    max-width: 70px;
+    overflow: hidden;
+    padding: 10px !important;
+}
+th{
+    padding: 10px !important;
+}
+#AfficheCommandes table{
+    margin: auto;
+}

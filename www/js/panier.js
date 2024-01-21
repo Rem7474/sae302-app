@@ -7,7 +7,7 @@
 
 //VARIABLE TEST
 //METTRE A FALSE POUR TESTER AVEC LES PLUGINS
-const TEST = true;
+const TEST = false;
 if (TEST){
   console.log("test");
   testpanier();
@@ -397,6 +397,7 @@ async function ValiderPanier(){
                 if (!response.ok) {
                     Display_Error("Erreur réseaux" ,"ValiderPanier",response.status);
                 }
+                document.getElementById("Loading").classList.add("hidden");
                 return response.json();
             })
             .then(data => {
@@ -411,11 +412,13 @@ async function ValiderPanier(){
             })
             .catch(error => {
                 Display_Error("Erreur inconnue" ,"ValiderPanier",error);
+                document.getElementById("Loading").classList.add("hidden");
             });
         }
         localStorage.removeItem("panier");
         AffichePanier();
-        alert("Vente effectuée");
+        navigator.notification.alert("Vente effectuée", null, "Vente effectuée", "OK");
+
     }
 }
 function ArticleAction(type){

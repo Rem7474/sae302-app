@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta charset="utf-8">
-        <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://cdn.jsdelivr.net data: https://ssl.gstatic.com https://fonts.gstatic.com 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; media-src *; img-src 'self' data: content: remcorp.fr *.remcorp.fr; connect-src 'self' *.remcorp.fr;">
+        <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://cdn.jsdelivr.net data: https://ssl.gstatic.com https://fonts.gstatic.com 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; script-src 'self' https://cdn.jsdelivr.net blob:; media-src *; img-src 'self' data: content: remcorp.fr *.remcorp.fr; connect-src 'self' *.remcorp.fr https://api.sae302.remcorp.fr;">
         <meta name="format-detection" content="telephone=no">
         <meta name="msapplication-tap-highlight" content="no">
         <meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
@@ -12,8 +12,12 @@
         <link rel="stylesheet" href="./mdl/material.min.css">
         <script src="./mdl/material.min.js"></script>
         <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-        <script src="cordova.js"></script>
-        <title>Panier</title>
+        <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/jsbarcode/3.6.0/JsBarcode.all.min.js"></script>
+        <script src="cordova.js" defer></script>
+        <script src="js/api.js"></script>
+        <link rel="stylesheet" href="css/commandes.css">
+        <title>Commandes</title>
     </head>
     <body id="body">
         <div id="app">
@@ -22,9 +26,13 @@
                 <!--<img src="img/logo_bdesite.png" alt="logo">-->
                 <div></div>
             </div>
-            <div id="commandes">
-              
+            <div id="AfficheCommandes">
             </div>
+            <!--Loading-->
+            <!-- MDL Progress Bar with Indeterminate Progress -->
+            <div id="Loading" class="hidden">
+              <div id="p2" class="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div>
+          </div>
              <!--Barre de navigation-->
              <div id="barre_navigation">
               <ul>
@@ -33,15 +41,8 @@
                   <li><i id="open" class="bi bi-archive"></i></li>
               </ul>
           </div>
-            <script src="js/commmandes.js"></script>
+            <script src="js/commandes.js"></script>
         </div>
     </body>
 </html>
-
-
-<style>
-    .demo-list-two {
-      width: 300px;
-    }
-    </style>
     
