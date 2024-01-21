@@ -9,3 +9,6 @@ th{
 #AfficheCommandes table{
     margin: auto;
 }
+tr td:first-child{
+    max-width: 80px;
+}

@@ -74,7 +74,7 @@ function AfficheCommandes(){
             tr.appendChild(th);
             th = document.createElement("th");
             th.classList.add("mdl-data-table__cell--non-numeric");
-            th.innerHTML = "Prix total";
+            th.innerHTML = "Total";
             tr.appendChild(th);
             thead.appendChild(tr);
             table.appendChild(thead);
